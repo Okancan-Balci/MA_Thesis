@@ -1,0 +1,344 @@
+---
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    toc_depth: 4
+    df_print: paged
+    code_folding: show
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(scales)
+library(AER)
+library(ggfortify)
+library(lubridate)
+library(koRpus.lang.en)
+
+options(scipen = 20)
+
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE,
+                      fig.align = "center",
+                      fig.width = 8)
+
+```
+
+
+```{r}
+## Phone Data
+
+phones_data <- read_csv("all_phone_reviews_15_03_22.csv", show_col_types = FALSE)
+
+phones_data <- phones_data %>% 
+  mutate(Product_Type = "Phone")
+
+## Laptop Data
+
+files <- dir()
+files <- files[str_detect(dir(), "all_laptop_reviews.+")]
+laptop_data <- map_dfr(files, read_csv, show_col_types = FALSE)
+
+laptop_data <- laptop_data %>% 
+  filter(!Product_Name %in% c(
+    'Samsung - Galaxy Book Pro 360 15.6" AMOLED Touch-Screen Laptop - Intel Evo Platform Core i7 - 16GB Memory - 1TB SSD - Mystic Navy',
+    'ASUS - 14.0" Laptop - Intel Celeron N4020 - 4GB Memory - 64GB eMMC - Star Black - Star Black',
+    'ASUS - 14" Chromebook - Intel Celeron N3350 - 4GB Memory - 32GB eMMC - Silver',
+    'Samsung - Galaxy 13.3" 4K Ultra HD Touch-Screen Chromebook - Intel Core i5 - 8GB Memory - 256GB SSD - Mercury Gray'
+  )) %>% 
+  mutate(Product_Type = "Laptop")
+
+## TV Data
+
+tvs_data <- read_csv("all_tv_reviews_16_03_22.csv", show_col_types = FALSE)
+tvs_data <- tvs_data %>% 
+  mutate(Product_Type = "TV")
+
+## Merging All 
+
+search_goods <- phones_data %>% 
+  bind_rows(tvs_data, laptop_data)
+
+## Filtering Total Votes below 5
+
+search_goods <- search_goods %>% 
+  mutate(Total_Vote = Helpful + Unhelpful) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Helpfulness = Helpful / Total_Vote) %>% 
+  mutate(is_Exp = 0)
+
+search_goods <- search_goods %>% 
+  mutate(Dupped = duplicated(Review)) %>% 
+  filter(Dupped == 0)
+
+## Word Counts
+
+search_goods <- search_goods %>% 
+  mutate(Doc_ID = row_number()) 
+
+words_agg <- search_goods %>%
+  mutate(Review = str_to_lower(Review, locale = "en")) %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  #anti_join(stop_words) %>% 
+  count(Doc_ID, name = "Word_Count")
+
+search_goods <- search_goods %>% 
+  inner_join(words_agg, by = "Doc_ID")
+
+## Emotion Sentiments (EmoLex)
+
+sentiments_agg <- search_goods %>%
+  mutate(Review = str_to_lower(Review, locale = "en")) %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  inner_join(get_sentiments("nrc")) %>% 
+  count(Doc_ID, sentiment, name = "Sent_Count") %>% 
+  pivot_wider(names_from = sentiment, values_from = Sent_Count, values_fill = 0)
+  
+search_goods <- search_goods %>% 
+  full_join(sentiments_agg, by = "Doc_ID")
+
+variables <- names(sentiments_agg)[-1]
+
+search_goods <- search_goods %>% 
+  mutate(across(.cols = variables, .fns = ~ifelse(is.na(.), 0, .) ))
+
+
+search_goods <- search_goods %>% 
+  mutate(across(.cols = all_of(variables), .fns = function(.) ./Word_Count*100))
+
+search_goods <- search_goods %>% 
+  mutate(across(.cols = variables, .fns = function(.) log10(. + 1)))
+
+
+## Dates
+
+search_goods <- search_goods %>% 
+  mutate(Date = as_date(mdy_hm(Date, locale = "english")))
+
+first_dates <- search_goods %>% 
+  group_by(Product_Name) %>% 
+  slice_min(order_by = Date, n = 1, with_ties = F) %>% 
+  select(Product_Name, Date) %>% 
+  rename(First_Date = Date)
+
+search_goods <- search_goods %>% 
+  full_join(first_dates, by = "Product_Name") %>% 
+  mutate(Timeline = as.integer(Date - First_Date))
+
+```
+
+
+```{r}
+## Readability Index(Unfortunately wasn't helpful)
+
+# review_vec <-  search_goods %>%
+#   pull(Review)
+# 
+# SMOG_grade <- vector(mode = "double")
+# 
+# capture.output(
+# 
+# for (i in seq_len(length(review_vec))) {
+#   SMOG <-  readability(tokenize(review_vec[i], lang = "en", format = "obj"),index = "SMOG", quiet = TRUE)
+#   
+#   SMOG_grade <- append(SMOG_grade, summary(SMOG) %>% pull(grade))
+# }
+# ,file = nullfile()
+# )
+# 
+# length(SMOG_grade)
+# 
+# search_goods <- search_goods %>% 
+#   mutate(SMOG_grade = as.double(SMOG_grade))
+```
+
+
+
+# EDA
+
+```{r}
+search_goods %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white")
+
+search_goods %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+
+search_goods %>% 
+  ggplot(aes(Rating))+
+  geom_bar(color = "white")
+
+search_goods %>% 
+  ggplot(aes(Timeline+1))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+
+search_goods %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+
+```
+
+
+```{r}
+search_goods %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  scale_x_log10()
+
+search_goods %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  facet_wrap(~Rating)+
+  scale_x_log10()
+
+search_goods %>% 
+  mutate(WC_Binned = cut_number(Word_Count, n = 10)) %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point()+
+  geom_smooth(method = "loess")+
+  facet_wrap(~WC_Binned)
+
+search_goods %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point()+
+  geom_smooth(method = "loess")
+
+search_goods %>% 
+  ggplot(aes(Timeline+1, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  scale_x_log10()
+
+search_goods %>% 
+  ggplot(aes(Total_Vote, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  scale_x_log10()
+
+search_goods %>% 
+  select(variables, Word_Count,Rating, Total_Vote, Timeline) %>% 
+  GGally::ggcorr(label = T)
+```
+
+```{r}
+model_lm <- lm(Helpfulness ~ Rating + I(Rating^2) + I(Rating^3)+ log10(Word_Count) + log10(Total_Vote)  + log10(Word_Count)*Rating + Timeline + anticipation  + positive + negative + trust,
+               data = search_goods )
+summary(model_lm) 
+```
+
+```{r}
+model_tobit <- tobit(Helpfulness ~ Rating + I(Rating^2) + I(Rating^3)+ log10(Word_Count) + log10(Total_Vote)  + log10(Word_Count)*Rating + Timeline + anticipation   + positive + negative + trust,
+                     data = search_goods,
+                     left = 0, right = 1)
+summary(model_tobit)
+```
+
+```{r}
+tibble(Residuals = resid(model_tobit),
+       Fitted = fitted(model_tobit),
+       Observed = search_goods$Helpfulness) %>% 
+  ggplot(aes(Fitted, Observed))+
+  geom_point(alpha = 0.2)+
+  geom_abline(slope = 1, color = "red", size = 1.1, linetype = 2)+
+  coord_cartesian(xlim = c(0,1), ylim =c(0,1))
+```
+
+
+```{r}
+qplot(resid(model_lm), bins = 50)
+qplot(resid(model_tobit), bins = 50)
+```
+
+```{r}
+toy_data <- tibble(Rating = seq(0.5,5, 0.5),
+                   Word_Count = rep(800,10),
+                   Total_Vote = rep(100,10))
+
+tibble(
+  preds = predict(model_tobit, newdata = toy_data),
+  Rating = seq(0.5,5, 0.5)
+) %>% 
+  ggplot(aes(Rating, preds))+
+  geom_line()+
+  geom_point()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

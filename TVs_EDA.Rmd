@@ -1,0 +1,202 @@
+---
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    toc_depth: 4
+    df_print: paged
+    code_folding: show
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(scales)
+library(AER)
+library(ggfortify)
+library(lubridate)
+
+options(scipen = 20)
+
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE,
+                      fig.align = "center",
+                      fig.width = 8)
+
+```
+
+
+```{r}
+tvs_data <- read_csv("all_tv_reviews_16_03_22.csv")
+tvs_data <- tvs_data %>% 
+  mutate(Product_Type = "TV")
+tvs_data
+```
+
+
+```{r}
+tvs_data <- tvs_data %>% 
+  mutate(Total_Vote = Helpful + Unhelpful) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Helpfulness = Helpful / Total_Vote) 
+```
+
+
+```{r}
+tvs_data <- tvs_data %>% 
+  mutate(Doc_ID = row_number()) %>% 
+  mutate(Review = str_to_lower(Review, locale = "en"))
+```
+
+```{r}
+words_agg <- tvs_data %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  anti_join(stop_words) %>% 
+  count(Doc_ID)
+```
+
+```{r}
+tvs_data <- tvs_data %>% 
+  inner_join(words_agg, by = "Doc_ID")
+```
+
+
+```{r}
+tvs_data <- tvs_data %>% 
+  mutate(Date = as_date(mdy_hm(Date, locale = "english")))
+```
+
+```{r}
+first_dates <- tvs_data %>% 
+  group_by(Product_Name) %>% 
+  slice_min(order_by = Date, n = 1, with_ties = F) %>% 
+  select(Product_Name, Date) %>% 
+  rename(First_Date = Date)
+```
+
+```{r}
+tvs_data <- tvs_data %>% 
+  full_join(first_dates, by = "Product_Name") %>% 
+  mutate(Timeline = as.integer(Date - First_Date))
+```
+
+
+# EDA
+
+## Univariate
+
+```{r}
+tvs_data %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white")
+
+tvs_data %>% 
+  ggplot(aes(n))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+
+tvs_data %>% 
+  ggplot(aes(Rating))+
+  geom_bar(color = "white")
+
+tvs_data %>% 
+  ggplot(aes(Timeline))+
+  geom_histogram(color = "white")
+
+tvs_data %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+```
+
+## Bivariate
+
+```{r}
+tvs_data %>% 
+  ggplot(aes(n, Helpfulness))+
+  geom_point(alpha = 0.4)+
+  geom_smooth()+
+  scale_x_log10()
+
+tvs_data %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point(alpha = 0.4)+
+  geom_smooth(method = "loess")
+
+tvs_data %>% 
+  ggplot(aes(Timeline, Helpfulness))+
+  geom_point(alpha = 0.4)+
+  geom_smooth()
+```
+
+
+```{r}
+model_lm <- lm(Helpfulness ~ Rating + I(Rating^2) + I(Rating^3) + log10(n) + I(log10(n)^2) + log10(Total_Vote) , data = tvs_data)
+summary(model_lm) 
+```
+
+```{r}
+model_tobit <- tobit(Helpfulness ~ Rating + I(Rating^2) + I(Rating^3) + log10(n) + I(log10(n)^2) + log10(Total_Vote) + Timeline, data = tvs_data,
+                     left = 0, right = 1)
+summary(model_tobit)
+```
+
+```{r}
+qplot(resid(model_tobit))
+```
+
+
+```{r}
+autoplot(model_lm)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

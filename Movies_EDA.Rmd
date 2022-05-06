@@ -1,0 +1,397 @@
+---
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    toc_depth: 4
+    df_print: paged
+    code_folding: show
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(scales)
+library(AER)
+library(ggfortify)
+library(lubridate)
+library(koRpus.lang.en)
+
+options(scipen = 20)
+
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE,
+                      fig.align = "center",
+                      fig.width = 8)
+
+```
+
+
+```{r}
+files <- dir()
+
+files <- files[str_detect(files, "movie_.+")]
+
+#movies_data <- movies_data %>% 
+#  bind_rows(map_dfr(files, read_csv))
+
+movies_data <- map_dfr(files, read_csv, show_col_types = FALSE)
+```
+
+
+```{r}
+movies_data <- movies_data %>% 
+  filter(!is.na(Rating)) 
+
+movies_data <- movies_data %>% 
+  #filter(Movie != "Midsommar") %>% 
+  separate(Rating, into = c("Rating", "Total"), sep = "/", ) %>% 
+  select(-Total) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Rating = as.double(Rating)) %>% 
+  mutate(Helpfulness = Helpful_Vote / Total_Vote) %>% 
+  mutate(Rating = Rating/2)
+```
+
+
+```{r}
+## Removing All the Duplicated Reviews including the original
+movies_data <- movies_data %>% 
+  mutate(Rev_dup = duplicated(Review) | duplicated(Review, fromLast = TRUE)) %>% 
+  filter(Rev_dup == 0)
+```
+
+```{r}
+## Word Count
+
+movies_data <- movies_data %>% 
+  mutate(Doc_ID = row_number())
+## Words
+movies_agg <- movies_data %>% 
+  mutate(Review = str_to_lower(Review, locale = "en")) %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  #anti_join(stop_words) %>% 
+  count(Doc_ID, name = "Word_Count")
+
+movies_data <- movies_data %>% 
+  inner_join(movies_agg, by = "Doc_ID")
+
+## Sentences
+
+movies_sentence_agg <- movies_data %>% 
+  unnest_tokens(output = Sentence, input = Review, to_lower = FALSE, token = "sentences") %>% 
+  count(Doc_ID,name = "n_Sentence")
+
+movies_data <- movies_data %>% 
+  inner_join(movies_sentence_agg, by = "Doc_ID")
+
+## Emotion Sentiments (EmoLex)
+
+sentiments_agg <- movies_data %>%
+  mutate(Review = str_to_lower(Review, locale = "en")) %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  inner_join(get_sentiments("nrc") %>% filter(word != "spider")) %>% 
+  count(Doc_ID, sentiment, name = "Sent_Count") %>% 
+  pivot_wider(names_from = sentiment, values_from = Sent_Count, values_fill = 0)
+  
+movies_data <- movies_data %>% 
+  full_join(sentiments_agg, by = "Doc_ID")
+
+variables <- names(sentiments_agg)[-1]
+
+movies_data <- movies_data %>% 
+  mutate(across(.cols = all_of(variables), .fns = ~ifelse(is.na(.), 0, .) ))
+
+movies_data <- movies_data %>% 
+  mutate(across(.cols = all_of(variables), .fns = function(.) ./Word_Count*100))
+
+movies_data <- movies_data %>% 
+  mutate(across(.cols = variables, .fns = function(.) log10(. + 1)))
+
+```
+
+
+```{r}
+# 
+# review_vec <-  movies_data %>%
+#   pull(Review)
+# 
+# 
+# SMOG_grade <- vector(mode = "double")
+# SMOG_age <- vector(mode = "double")
+# Flesch_raw <- vector(mode = "double")
+# ARI_grade <- vector(mode = "double")
+# 
+# ## ARI Index
+# # for (i in seq_len(length(review_vec))) {
+# #   ARI_Index <- readability(tokenize(review_vec[i], lang = "en", format = "obj"),index = "ARI", quiet = TRUE)
+# #
+# #   ARI_grade <- append(ARI_grade, summary(ARI_Index) %>% pull(grade))
+# # }
+# 
+# # length(ARI_grade)
+# 
+# ## Flesch Ease of Reading
+# 
+# # for (i in seq_len(length(review_vec))) {
+# #   flesch_reading_ease <- readability(tokenize(review_vec[i], lang = "en", format = "obj"),index = "Flesch", quiet = TRUE)
+# #
+# #   Flesch_raw <- append(Flesch_raw, summary(flesch_reading_ease) %>% pull(raw))
+# # }
+# #
+# # length(Flesch_raw)
+# 
+# ## SMOG
+# 
+# capture.output(
+# for (i in seq_len(length(review_vec))) {
+#   SMOG <-  readability(tokenize(review_vec[i], lang = "en", format = "obj"),index = "SMOG")
+# 
+#   SMOG_grade <- append(SMOG_grade, summary(SMOG) %>% pull(grade))
+#   SMOG_age <-  append(SMOG_age, summary(SMOG) %>% pull(age))
+# }
+# ,file = nullfile()
+# )
+# length(SMOG_grade)
+```
+
+```{r}
+# movies_data <- movies_data %>% 
+#   bind_cols(tibble(
+#     SMOG_grade = as.double(SMOG_grade),
+#     SMOG_age = as.double(SMOG_age)))
+
+# movies_data <- movies_data %>% 
+#   bind_cols(tibble(
+#     Flesch_raw = as.double(Flesch_raw)
+#   ))
+# 
+# movies_data <- movies_data %>% 
+#   bind_cols(tibble(
+#     ARI_grade = as.double(ARI_grade)
+#   ))
+```
+
+
+
+
+```{r}
+## Timeline 
+
+movies_data <- movies_data %>% 
+  mutate(Date = dmy(Date, locale = "english"))
+
+first_dates <- movies_data %>% 
+  group_by(Movie) %>% 
+  slice_min(order_by = Date, n = 1, with_ties = F) %>% 
+  select(Movie, Date) %>% 
+  rename(First_Date = Date)
+
+movies_data <- full_join(movies_data, first_dates, by = "Movie") %>% 
+  mutate(Timeline = as.integer(Date - First_Date))
+```
+
+```{r}
+movies_data %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white")
+
+movies_data %>% 
+  ggplot(aes(Rating))+
+  geom_bar()
+
+movies_data %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+
+movies_data %>% 
+  ggplot(aes(n_Sentence))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+
+movies_data %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+
+```
+
+
+```{r}
+movies_data %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point()+
+  geom_smooth()
+
+movies_data %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  facet_wrap(~Movie)
+
+movies_data %>% 
+  ggplot(aes(Timeline, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  facet_wrap(~Movie, scales = "free_x")
+
+movies_data %>% 
+  ggplot(aes(log10(Word_Count), Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()
+
+movies_data %>% 
+  ggplot(aes((n_Sentence), Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()+
+  scale_x_log10()
+
+movies_data %>% 
+  ggplot(aes(log10(Word_Count), Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()+
+  facet_wrap(~Movie)
+
+```
+
+
+```{r}
+movies_data %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.2)+
+  geom_smooth()+
+  facet_wrap(~Rating)+
+  scale_x_log10()
+
+movies_data %>% 
+  mutate(WC_Binned = cut_number(Word_Count, n = 10)) %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  facet_wrap(~WC_Binned)
+
+movies_data %>% 
+  mutate(across(.cols = variables, .fns = function(.) log10(. + 1))) %>% 
+  select(variables, Word_Count,Rating, Total_Vote, Timeline) %>%
+  GGally::ggcorr(label = T)
+```
+
+
+```{r}
+mod_lm <- lm(Helpfulness ~ Rating + I(Rating^2) + I(Rating^3)+ log10(Word_Count) + log10(Total_Vote)  + log10(Word_Count)*Rating + Timeline + anticipation   + positive + negative + trust,
+           data = movies_data)
+
+summary(mod_lm)
+```
+
+```{r}
+mod_lm %>% 
+  autoplot(which = 1:6, label.hjust = 1.2)
+```
+
+
+```{r}
+mod_tobit <- tobit(Helpfulness ~ Rating + I(Rating^2) + I(Rating^3)+ log10(Word_Count) + log10(Total_Vote)  + log10(Word_Count)*Rating + Timeline + anticipation  + positive  + negative  + trust,
+                   data = movies_data, left = 0, right = 1)
+
+summary(mod_tobit)
+```
+
+
+```{r}
+tibble(Residuals = resid(mod_tobit),
+       Fitted = fitted(mod_tobit),
+       Observed = movies_data$Helpfulness) %>% 
+  ggplot(aes(Fitted, Observed))+
+  geom_point(alpha = 0.2)+
+  geom_abline(slope = 1, color = "red", size = 1.1, linetype = 2)+
+  coord_cartesian(xlim = c(0,1), ylim =c(0,1))
+```
+
+```{r}
+ggplot(data = tibble(Resids = resid(mod_tobit)),
+       aes(Resids, ..density..))+
+  geom_histogram(bins = 50, color = "white")
+```
+
+
+
+
+
+```{r}
+library(GGally)
+
+movies_data %>%
+  mutate(Word_Count = log10(Word_Count),
+         Total_Vote = log10(Total_Vote),
+         n_Sentence = log10(n_Sentence)) %>% 
+  select(Helpfulness, Rating, Total_Vote, Word_Count, n_Sentence) %>% 
+  ggpairs()
+```
+
+
+
+
+
+
+
+```{r}
+summary(mod_tobit)
+
+preds <-  predict(mod_tobit, newdata = tibble(Rating = seq(0.5, 5, 0.5),
+                                    Word_Count = rep(30,10),
+                                    Total_Vote = rep(10,10))) 
+
+qplot(x = seq(0.5, 5, 0.5), preds, geom = "point", ylim = c(0,1))
+```
+
+```{r}
+fitted(mod_tobit) %>% max
+
+movies_data[which.max(fitted(mod_tobit)),]
+
+predict(mod_tobit, newdata = movies_data[which.min(fitted(mod_tobit)),])
+```
+
+
+```{r}
+movies_data[which.min(fitted(mod_tobit)),]  %>%
+  mutate(Review = str_to_lower(Review, locale = "en")) %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  inner_join(get_sentiments("nrc"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

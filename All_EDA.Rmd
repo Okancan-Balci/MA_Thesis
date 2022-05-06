@@ -1,0 +1,225 @@
+---
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    toc_depth: 4
+    df_print: paged
+    code_folding: show
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(scales)
+library(AER)
+
+options(scipen = 20)
+
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE,
+                      fig.align = "center",
+                      fig.width = 8)
+
+```
+
+```{r}
+## Laptop Data
+
+files <- dir()
+
+files <- files[str_detect(dir(), "all_laptop_reviews.+")]
+
+laptop_data <- map_dfr(files, read_csv)
+
+
+laptop_data <- laptop_data %>% 
+  filter(!Product_Name %in% c(
+    'Samsung - Galaxy Book Pro 360 15.6" AMOLED Touch-Screen Laptop - Intel Evo Platform Core i7 - 16GB Memory - 1TB SSD - Mystic Navy',
+    'ASUS - 14.0" Laptop - Intel Celeron N4020 - 4GB Memory - 64GB eMMC - Star Black - Star Black',
+    'ASUS - 14" Chromebook - Intel Celeron N3350 - 4GB Memory - 32GB eMMC - Silver',
+    'Samsung - Galaxy 13.3" 4K Ultra HD Touch-Screen Chromebook - Intel Core i5 - 8GB Memory - 256GB SSD - Mercury Gray'
+  )) %>% 
+  mutate(Product_Type = "Laptop")
+
+laptop_data <- laptop_data %>%
+  mutate(Total_Vote = Helpful + Unhelpful) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Helpfulness = Helpful / Total_Vote) %>% 
+  mutate(is_Exp = 0)
+```
+
+
+
+
+```{r}
+movies_data <- read_csv("homecoming15-02-22.csv") %>% 
+  mutate(Movie = "Homecoming") %>% 
+  bind_rows(read_csv("far_from_home15-02-22.csv") %>% 
+              mutate(Movie = "Far From Home")) %>% 
+  bind_rows(read_csv("no_way_home19-02-22.csv") %>% 
+              mutate(Movie = "No Way Home"))
+```
+
+```{r}
+movies_data <- movies_data %>% 
+  filter(!is.na(Rating)) 
+
+movies_data <- movies_data %>% 
+  separate(Rating, into = c("Rating", "Total"), sep = "/", ) %>% 
+  select(-Total) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Rating = as.double(Rating)) %>% 
+  mutate(Helpfulness = Helpful_Vote / Total_Vote) %>% 
+  mutate(Rating = Rating/2) %>% 
+  mutate(is_Exp = 1)
+
+# In this case I am removing every duplicated review.
+
+movies_data <- movies_data %>% 
+  mutate(Rev_dup = duplicated(Review) | duplicated(Review, fromLast = TRUE)) %>% 
+  filter(Rev_dup == 0)
+```
+
+```{r}
+laptop_data %>% names
+```
+
+```{r}
+movies_data %>% names
+```
+
+
+```{r}
+all_data <- laptop_data %>% 
+  rename(Helpful_Vote = Helpful) %>% 
+  select(-Unhelpful, -Product_Name, -Page) %>% 
+  bind_rows(movies_data %>% select(-Movie))
+```
+
+
+```{r}
+all_data <- all_data %>% 
+  mutate(Doc_ID = row_number())
+```
+
+
+
+```{r}
+all_data <- all_data %>% 
+  mutate(Review = str_to_lower(Review, locale = "en"))
+```
+
+
+
+```{r}
+words_agg <- all_data %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  anti_join(stop_words) %>% 
+  count(Doc_ID)
+```
+
+
+```{r}
+all_data <- words_agg %>% 
+  inner_join(all_data, by = "Doc_ID") 
+```
+
+
+
+```{r}
+summary(lm(Helpfulness ~ Rating*is_Exp + I(Rating^2)*is_Exp + log10(n)*is_Exp + log10(Total_Vote), data = all_data))
+```
+
+```{r}
+summary(tobit(Helpfulness ~ Rating*is_Exp + I(Rating^2)*is_Exp + log10(n)*is_Exp + log10(Total_Vote), data = all_data, left = 0, right = 1))
+```
+
+
+
+
+
+```{r}
+all_data %>% 
+  ggplot(aes(n, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  facet_wrap(~is_Exp)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+---
+bibliography: references.bib
+link_citations: true
+---
+
+# Fuck literature

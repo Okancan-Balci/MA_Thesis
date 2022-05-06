@@ -1,0 +1,320 @@
+---
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    toc_depth: 4
+    df_print: paged
+    code_folding: show
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(scales)
+library(AER)
+library(lubridate)
+
+options(scipen = 20)
+
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE,
+                      fig.align = "center",
+                      fig.width = 8)
+
+```
+
+```{r}
+files <- dir()
+
+files <- files[str_detect(dir(), "all_laptop_reviews.+")]
+```
+
+
+
+```{r}
+laptop_data <- map_dfr(files, read_csv)
+```
+
+```{r}
+
+# Filtering out missed duplicated products
+
+laptop_data <- laptop_data %>% 
+  filter(!Product_Name %in% c(
+    'Samsung - Galaxy Book Pro 360 15.6" AMOLED Touch-Screen Laptop - Intel Evo Platform Core i7 - 16GB Memory - 1TB SSD - Mystic Navy',
+    'ASUS - 14.0" Laptop - Intel Celeron N4020 - 4GB Memory - 64GB eMMC - Star Black - Star Black',
+    'ASUS - 14" Chromebook - Intel Celeron N3350 - 4GB Memory - 32GB eMMC - Silver',
+    'Samsung - Galaxy 13.3" 4K Ultra HD Touch-Screen Chromebook - Intel Core i5 - 8GB Memory - 256GB SSD - Mercury Gray'
+  ))
+```
+
+```{r}
+laptop_data_filtered <- laptop_data %>%
+  mutate(Total_Vote = Helpful + Unhelpful) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Helpfulness = Helpful / Total_Vote)
+
+laptop_data_filtered <- laptop_data_filtered %>% 
+  mutate(Rev_dup = duplicated(Review)) %>% 
+  filter(Rev_dup == 0)
+```
+
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white")
+```
+
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(Rating))+
+  geom_bar()
+```
+
+
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point()+
+  geom_smooth(method = "loess")
+```
+
+
+
+```{r}
+laptop_data_filtered <- laptop_data_filtered %>% 
+  mutate(Doc_ID = row_number())
+```
+
+
+
+```{r}
+laptop_data_filtered <- laptop_data_filtered %>% 
+  mutate(Review = str_to_lower(Review, locale = "en"))
+```
+
+
+
+```{r}
+words_agg <- laptop_data_filtered %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  anti_join(stop_words) %>% 
+  count(Doc_ID)
+```
+
+
+```{r}
+laptop_data_filtered <- words_agg %>% 
+  inner_join(laptop_data_filtered, by = "Doc_ID") 
+```
+
+
+```{r}
+laptop_data_filtered <- laptop_data_filtered %>% 
+  mutate(Date = as_date(mdy_hm(Date, locale = "english"))) 
+```
+
+```{r}
+first_dates <- laptop_data_filtered %>% 
+  group_by(Product_Name) %>% 
+  slice_min(order_by = Date, n = 1, with_ties = F) %>% 
+  select(Product_Name, Date) %>% 
+  rename(First_Date = Date)
+```
+
+```{r}
+laptop_data_filtered <- full_join(laptop_data_filtered, first_dates, by = "Product_Name") %>% 
+  mutate(Timeline = as.integer(Date - First_Date))
+```
+
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(Timeline))+
+  geom_histogram()
+
+laptop_data_filtered %>% 
+  ggplot(aes(Timeline, Helpfulness))+
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(n))+
+  geom_histogram(color = "white")+
+  scale_x_log10()
+```
+
+
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(n, Helpfulness))+
+  geom_point()+
+  geom_smooth()+
+  facet_wrap(~Product_Name)+
+  scale_x_continuous(n.breaks = 10)+
+  coord_cartesian(ylim = c(0,1))
+```
+
+
+
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(n, Rating))+
+  geom_point()+
+  geom_smooth()
+```
+
+
+```{r}
+sent_scores <- laptop_data_filtered %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  inner_join(get_sentiments("afinn")) %>% 
+  group_by(Doc_ID) %>% 
+  summarise(Total_Sent = sum(value))
+```
+
+
+
+```{r}
+laptop_data_filtered %>% 
+  inner_join(sent_scores, by = "Doc_ID") %>% 
+  ggplot(aes(Total_Sent, Helpfulness))+
+  geom_point()+
+  geom_smooth()
+```
+
+
+```{r}
+laptop_data_filtered %>% 
+  inner_join(sent_scores, by = "Doc_ID") %>% 
+  ggplot(aes(Total_Sent, Rating))+
+  geom_point()+
+  geom_smooth()
+```
+
+```{r}
+laptop_sents <- laptop_data_filtered %>% 
+  inner_join(sent_scores, by = "Doc_ID")
+```
+
+
+```{r}
+laptop_sents %>% 
+  ggplot(aes(Total_Sent))+
+  geom_histogram()
+```
+
+```{r}
+laptop_data_filtered %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white")+
+  scale_x_log10(breaks = scales::log_breaks(12))
+```
+
+
+
+```{r}
+summary(lm(Helpfulness ~ Rating + I(Rating^2) + log10(n) + log10(Total_Vote) + Timeline,
+           data = laptop_data_filtered))
+```
+
+```{r}
+lm(Helpfulness ~ Rating + I(Rating^2) + log10(n) + log10(Total_Vote) + Timeline, data = laptop_data_filtered) %>% 
+  autoplot(which = 1:6)
+```
+
+
+```{r}
+laptop_data_filtered
+```
+
+
+
+```{r}
+summary(tobit(Helpfulness ~ Rating + I(Rating^2) + log10(n)  + log10(Total_Vote) + Timeline,
+              data = laptop_data_filtered,
+              left = 0, right = 1))
+```
+
+
+
+```{r}
+laptop_data_filtered %>% 
+  mutate(n = log10(n)) %>% 
+  select(Helpfulness, Rating, Total_Vote, n,Timeline) %>% 
+  GGally::ggpairs()
+```
+
+
+
+
+
+
+
+
+```{r}
+model <- tobit(Helpfulness ~ Rating + I(Rating^2) + log10(n) + log10(Total_Vote), data = laptop_data_filtered, left = 0, right = 1)
+model2 <- tobit(Helpfulness ~ Rating + I(Rating^2) + I(Rating^3) + log10(n) + log10(Total_Vote), data = laptop_data_filtered, left = 0, right = 1)
+
+summary(model)
+summary(model2)
+
+anova(model2)
+```
+
+
+```{r}
+summary(model)
+
+preds <-  predict(model2, newdata = tibble(Rating = seq(0.5, 5, 0.5),
+                                    n = rep(100,10),
+                                    Total_Vote = rep(50,10))) 
+
+qplot(x = seq(0.5, 5, 0.5), preds)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

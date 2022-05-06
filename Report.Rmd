@@ -1,0 +1,545 @@
+---
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    toc_depth: 4
+    df_print: paged
+    code_folding: show
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(scales)
+library(AER)
+library(patchwork)
+library(ggfortify)
+
+options(scipen = 20)
+
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE,
+                      echo = FALSE,
+                      fig.align = "center",
+                      fig.width = 8)
+
+```
+
+
+```{r}
+files <- dir()
+
+files <- files[str_detect(dir(), "all_laptop_reviews.+")]
+
+laptop_data <- map_dfr(files, read_csv)
+
+laptop_data <- laptop_data %>% 
+  filter(!Product_Name %in% c(
+    'Samsung - Galaxy Book Pro 360 15.6" AMOLED Touch-Screen Laptop - Intel Evo Platform Core i7 - 16GB Memory - 1TB SSD - Mystic Navy',
+    'ASUS - 14.0" Laptop - Intel Celeron N4020 - 4GB Memory - 64GB eMMC - Star Black - Star Black',
+    'ASUS - 14" Chromebook - Intel Celeron N3350 - 4GB Memory - 32GB eMMC - Silver',
+    'Samsung - Galaxy 13.3" 4K Ultra HD Touch-Screen Chromebook - Intel Core i5 - 8GB Memory - 256GB SSD - Mercury Gray'
+  ))
+
+laptop_data <- laptop_data %>%
+  mutate(Total_Vote = Helpful + Unhelpful) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Helpfulness = Helpful / Total_Vote)
+
+laptop_data <- laptop_data %>% 
+  mutate(Rev_dup = duplicated(Review)) %>% 
+  filter(Rev_dup == 0)
+
+laptop_data <- laptop_data %>% 
+  mutate(Doc_ID = row_number())
+
+laptop_data <- laptop_data %>% 
+  mutate(Review = str_to_lower(Review, locale = "en"))
+
+words_agg <- laptop_data %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  anti_join(stop_words) %>% 
+  count(Doc_ID, name = "Word_Count")
+
+laptop_data <- words_agg %>% 
+  inner_join(laptop_data, by = "Doc_ID") 
+
+```
+
+```{r}
+movies_data <- read_csv("homecoming15-02-22.csv") %>% 
+  mutate(Movie = "Homecoming") %>% 
+  bind_rows(read_csv("far_from_home15-02-22.csv") %>% 
+              mutate(Movie = "Far From Home")) %>% 
+  bind_rows(read_csv("no_way_home19-02-22.csv") %>% 
+              mutate(Movie = "No Way Home"))
+
+movies_data <- movies_data %>% 
+  filter(!is.na(Rating)) 
+
+movies_data <- movies_data %>% 
+  separate(Rating, into = c("Rating", "Total"), sep = "/", ) %>% 
+  select(-Total) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Rating = as.double(Rating)) %>% 
+  mutate(Helpfulness = Helpful_Vote / Total_Vote) %>% 
+  mutate(Rating = Rating/2)
+
+movies_data <- movies_data %>% 
+  mutate(Rev_dup = duplicated(Review) | duplicated(Review, fromLast = TRUE)) %>% 
+  filter(Rev_dup == 0)
+
+movies_data <- movies_data %>% 
+  mutate(Doc_ID = row_number())
+
+movies_agg <- movies_data %>% 
+  mutate(Review = str_to_lower(Review, locale = "en")) %>% 
+  mutate(Doc_ID = row_number()) %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  anti_join(stop_words) %>% 
+  count(Doc_ID, name = "Word_Count")
+
+movies_data <- movies_data %>% 
+  inner_join(movies_agg, by = "Doc_ID")
+```
+
+# What Makes a Helpful Review?
+
+In this analysis I replicated the paper "WHAT MAKES A HELPFUL ONLINE REVIEW? A STUDY OF CUSTOMER REVIEWS ON AMAZON.COM" which can be found at this [link.](https://www.researchgate.net/publication/220259990_What_Makes_a_Helpful_Online_Review_A_Study_of_Customer_Reviews_on_Amazoncom)
+
+
+In that paper the writers used this data:
+
+```{r}
+knitr::include_graphics("paper_contents/The_Data.png")
+```
+
+In my work I used the latest Spider-Man Trilogy's reviews from IMDB as experience goods and Laptop reviews from BestBuy as search goods which have over 30 unique laptops.  
+
+# Descriptive Analysis
+
+The paper uses three explanatory variables:
+
+* Review Rating as Review Extremity
+
+* Word Count as Review Depth (Informativeness)
+
+* Experience/Search good Dummy Variable
+
+By using these variables and their interactions they try to explain Helpfulness percentage of reviews. In this case Helpfulness is :
+
+$$Helpfulness = \frac{Helpful\ Votes}{Helpful\ Votes \ + Unhelpful\ Votes}$$
+
+Additionally Total Votes are used as a control variable because %80 Helpfulness can come from either 4/5 or 80/100.
+
+## Dependent Variable
+
+Let's introduce the dependent variable by showing the distributions of both types of goods separately. In the plots the blue line represents the means.
+
+```{r}
+sum_laptop <- laptop_data %>% 
+  summarise(Mean = mean(Helpfulness),
+            SD = sd(Helpfulness),
+            Sample_Size = n())
+
+sum_movies <- movies_data %>% 
+  summarise(Mean = mean(Helpfulness),
+            SD = sd(Helpfulness),
+            Sample_Size = n())
+```
+
+
+```{r}
+p1 <- laptop_data %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white", fill = "steelblue")+
+  geom_vline(xintercept = sum_laptop$Mean, size = 2, alpha = 0.5, color = "blue")+
+  labs(y = NULL)+
+  ggtitle("The Distribution of Laptop Helpfulness")+
+  theme_bw()
+
+p2 <- movies_data %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white", fill = "steelblue")+
+  geom_vline(xintercept = sum_movies$Mean, size = 2, alpha = 0.5, color = "blue")+
+  labs(y = NULL)+
+  ggtitle("The Distribution of Movies Helpfulness")+
+  theme_bw()
+
+p1/p2
+```
+
+The distribution of the Movies can be considered as normal. However, in Laptop reviews we can actually observe high ends and low ends have many observations and obviously the data isn't normally distributed.
+
+The sample size is `r sum_laptop$Sample_Size` for Laptops(Search Goods) and `r sum_movies$Sample_Size` for Movies(Experience Goods). By the way in this data set I only included reviews which had total votes of 5 and higher to make sure that the reviews I am analyzing were read at least by a certain number of people.
+
+
+## Bivariate Analysis
+
+Let's also show the relationships between explained and explanatory variables one by one. Additionally I am going to point out the hypothesizes which were set in the paper I am replicating.
+
+After this section I am going to present Multiple Regression results.
+
+### Word Count
+
+Before I counted the words in a particular reviews I also used a "stop word" filter. This filter removes widely used helpless words such as "I, you, there etc." In this case word counts are distributed kind of exponentially so I think it would be a nice practice to take the logarithm of this variable. In the Mudambi's paper they didn't apply such a thing.
+
+```{r}
+p1 <- laptop_data %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue")+
+  labs(y = NULL)+
+  scale_x_continuous(n.breaks = 10)+
+  ggtitle("Distribution of the Word Count for Laptops")+
+  theme_bw()
+
+p2 <- laptop_data %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue")+
+  scale_x_log10()+
+  labs(x = "Log(Word_Count)", y = NULL)+
+  theme_bw()
+
+p3 <- movies_data %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue")+
+  labs(y = NULL)+
+  scale_x_continuous(n.breaks = 10)+
+  ggtitle("Distribution of the Word Count for Movies")+
+  theme_bw()
+
+p4 <- movies_data %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue")+
+  scale_x_log10()+
+  labs(x = "Log(Word_Count)", y = NULL)+
+  theme_bw()
+
+(p1+p2) / (p3+p4)
+
+```
+
+As you can see that after taking the logarithm word counts can be considered as normally distributed.
+
+In Mudambi's paper they hypothesized that:
+
+* "Review depth has a positive effect on the helpfulness of the review."
+
+* "The product type moderates the effect of review depth on the helpfulness of the review. Review depth has a greater positive effect on the helpfulness of the review for search goods than for experience goods."
+
+In the light of these hypothesizes let's analyze the relationship between helpfulness and the review depth for each good.
+
+```{r}
+p1 <- laptop_data %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()+
+  scale_x_log10()+
+  ggtitle("Laptops")+
+  labs(x = "Log(Word Count)")+
+  theme_bw()
+
+p2 <- movies_data %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()+
+  scale_x_log10()+
+  ggtitle("Movies")+
+  labs(x = "Log(Word Count)")+
+  theme_bw()
+
+p1 / p2
+```
+
+In this bivariate case we can see that Laptops(Search Good) has indeed the expected effect. On the other hand, Movies(Experience Good) has a slight negative effect or no effect at all. In some sense the second hypothesis is supported because we can clearly see stronger positive effect of the review depth on helpfulness of the review.
+
+I also checked the effects separately for Movie Reviews. Keep in mind that these movies are of the same series but they got criticized in a different manner. "Homecoming" was on the neutral side, "Far From Home" usually was considered as a let down compared to first movie "Homecoming" and "No way Home" was acclaimed pretty well from nearly every Spider-Man fan.
+
+```{r}
+movies_data %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()+
+  scale_x_log10()+
+  facet_wrap(~Movie)+
+  ggtitle("Movies Stratified")+
+  theme_bw()
+```
+
+In this case we can actually see that review depth might not have an effect on helpfulness of the review at all. The only clear negative relationship comes from the movie "Homecoming". Of course this is only the bivariate case.
+
+### Ratings
+
+on IMDB the review ratings are scaled between 1 to 10 whereas on BestBuy ratings are scaled between 1 to 5. To bring them on a same scale I divided IMDB ratings by two.
+
+To my surprise these distributions look similar. We can see there are more higher ratings and we can also see that the lowest rating 1 has many more observations compared to other low ratings such as 2 and 3.
+
+```{r}
+p1 <- laptop_data %>% 
+  ggplot(aes(Rating))+
+  geom_bar(color = "white", fill = "steelblue")+
+  labs(y = NULL)+
+  ggtitle("Distribution of the Ratings for Laptops")+
+  theme_bw()
+
+p2 <- movies_data %>% 
+  ggplot(aes(Rating))+
+  geom_bar(color = "white", fill = "steelblue")+
+  labs(y = NULL)+
+  scale_x_continuous(n.breaks = 10)+
+  ggtitle("Distribution of the Ratings for Movies")+
+  theme_bw()
+
+(p1/p2)
+```
+
+In the Mudambi's paper they claim that:
+
+* "Product type moderates the effect of review extremity on the helpfulness of the review. For experience goods, reviews with extreme ratings are less helpful than reviews with moderate ratings."
+
+```{r}
+p1 <- laptop_data %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth(method = "loess")+
+  ggtitle("Laptops")+
+  theme_bw()
+
+p2 <- movies_data %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()+
+  ggtitle("Movies")+
+  theme_bw()
+
+p1 + p2
+```
+
+For two types of goods we can't observe the aforementioned claim. For laptops there is some kind of a "U" shape but extreme reviews on the positive side seem to be much more helpful. In movies case we can observe the similar dip on neutral ratings such as 2 and 3. Additionally, there is one more turning point at the higher end of the ratings. Nonetheless, this hypothesis isn't supported with this data.
+
+Again I stratified the movies to check if there are similar patterns. 
+
+```{r}
+movies_data %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point(alpha = 0.3)+
+  geom_smooth()+
+  facet_wrap(~Movie)+
+  ggtitle("Relationships for each Movie")+
+  theme_bw()
+```
+
+So for experience goods reverse "U" shape is expected on Mudambi's paper but even after I stratified the data normal "U" shape persists. Which means that extreme reviews might be more helpful than neutral ones.
+
+### Word Count versus Ratings
+
+This is not really related to the paper but I wanted to share. For laptops, people really like writing longer reviews when they are content with the product. We can't see the similar effect for movies.
+
+```{r}
+p1 <- laptop_data %>% 
+  ggplot(aes(Word_Count, Rating))+
+  geom_point()+
+  geom_smooth()+
+  scale_x_log10()+
+  ggtitle("Laptops")+
+  theme_bw()
+
+p2 <- movies_data %>% 
+  ggplot(aes(Word_Count, Rating))+
+  geom_point()+
+  geom_smooth()+
+  scale_x_log10()+
+  ggtitle("Movies")+
+  theme_bw()
+
+p1 + p2
+```
+
+# Multiple Regression
+
+In the paper writers fit regression for each type of goods separately and as a whole. They also used Tobit Regression as a main tool and presented OLS as a benchmark so I am doing the same.
+
+## Laptops (Search Good)
+
+### Paper Results (Tobit)
+
+```{r}
+knitr::include_graphics("paper_contents/Regression_Search.png")
+```
+
+
+### OLS
+
+```{r}
+summary(lm(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote), data = laptop_data))
+```
+
+### Tobit
+
+```{r}
+summary(tobit(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote), data = laptop_data, right = 1, left = 0))
+```
+
+In this case I have the similar results with the paper. All the parameters signs are the same. This means that:
+
+* Review Depth has a positive effect on Helpfulness.
+
+* Ratings has a "U" shape which means that extreme ratings are much more useful than neutrals.
+
+Both OLS and Tobit gives the similar results as well. Tobit regression has stronger parameters.
+
+## Movies (Experience Good)
+
+### Paper Results(Tobit)
+
+```{r}
+knitr::include_graphics("paper_contents/Regression_Experience.png")
+```
+
+### OLS
+
+```{r}
+summary(lm(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote), data = movies_data))
+```
+
+
+### Tobit
+
+```{r}
+summary(tobit(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote), data = movies_data, right = 1, left = 0))
+```
+
+For the movies case there are contradictions from the paper. 
+
+* Ratings(Review Extremity) isn't reverse "U" since quadratic term has a positive significant sign.
+
+* There is actually a negative effect (though it is very close to 0) of Review Depth on Helpfulness.
+
+Again both OLS and Tobit give similar results.
+
+## All
+
+```{r}
+files <- dir()
+
+files <- files[str_detect(dir(), "all_laptop_reviews.+")]
+
+laptop_data <- map_dfr(files, read_csv)
+
+laptop_data <- laptop_data %>% 
+  filter(!Product_Name %in% c(
+    'Samsung - Galaxy Book Pro 360 15.6" AMOLED Touch-Screen Laptop - Intel Evo Platform Core i7 - 16GB Memory - 1TB SSD - Mystic Navy',
+    'ASUS - 14.0" Laptop - Intel Celeron N4020 - 4GB Memory - 64GB eMMC - Star Black - Star Black',
+    'ASUS - 14" Chromebook - Intel Celeron N3350 - 4GB Memory - 32GB eMMC - Silver',
+    'Samsung - Galaxy 13.3" 4K Ultra HD Touch-Screen Chromebook - Intel Core i5 - 8GB Memory - 256GB SSD - Mercury Gray'
+  ))
+
+laptop_data <- laptop_data %>%
+  mutate(Total_Vote = Helpful + Unhelpful) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Helpfulness = Helpful / Total_Vote) %>% 
+  mutate(is_Exp = 0)
+
+laptop_data <- laptop_data %>% 
+  mutate(Rev_dup = duplicated(Review)) %>% 
+  filter(Rev_dup == 0)
+
+movies_data <- read_csv("homecoming15-02-22.csv") %>% 
+  mutate(Movie = "Homecoming") %>% 
+  bind_rows(read_csv("far_from_home15-02-22.csv") %>% 
+              mutate(Movie = "Far From Home")) %>% 
+  bind_rows(read_csv("no_way_home19-02-22.csv") %>% 
+              mutate(Movie = "No Way Home"))
+
+movies_data <- movies_data %>% 
+  filter(!is.na(Rating)) 
+
+movies_data <- movies_data %>% 
+  separate(Rating, into = c("Rating", "Total"), sep = "/", ) %>% 
+  select(-Total) %>% 
+  filter(Total_Vote > 4) %>% 
+  mutate(Rating = as.double(Rating)) %>% 
+  mutate(Helpfulness = Helpful_Vote / Total_Vote) %>% 
+  mutate(Rating = Rating/2) %>% 
+  mutate(is_Exp = 1)
+
+movies_data <- movies_data %>% 
+  mutate(Rev_dup = duplicated(Review) | duplicated(Review, fromLast = TRUE)) %>% 
+  filter(Rev_dup == 0)
+
+all_data <- laptop_data %>% 
+  rename(Helpful_Vote = Helpful) %>% 
+  select(-Unhelpful, -Product_Name, -Page) %>% 
+  bind_rows(movies_data %>% select(-Movie))
+
+all_data <- all_data %>% 
+  mutate(Doc_ID = row_number())
+
+all_data <- all_data %>% 
+  mutate(Review = str_to_lower(Review, locale = "en"))
+
+words_agg <- all_data %>% 
+  unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
+  anti_join(stop_words) %>% 
+  count(Doc_ID)
+
+all_data <- words_agg %>% 
+  inner_join(all_data, by = "Doc_ID") 
+```
+
+Finally I run the regression one last time with a dummy variable for experience goods called `is_Exp`. In the paper, writers encoded Experience goods with 1 and search good with 0. I am following the same.
+
+### Paper Results(Tobit)
+
+```{r}
+knitr::include_graphics("paper_contents/Regression_Full_Sample.png")
+```
+
+### OLS
+
+```{r}
+summary(lm(Helpfulness ~ Rating*is_Exp + I(Rating^2)*is_Exp + log10(n)*is_Exp + log10(Total_Vote), data = all_data))
+```
+
+
+### Tobit
+
+```{r}
+summary(tobit(Helpfulness ~ Rating*is_Exp + I(Rating^2)*is_Exp + log10(n)*is_Exp + log10(Total_Vote), data = all_data, left = 0, right = 1))
+```
+
+These results are also consistent with individual regressions I ran above. Although parameters change a little bit they still have the same signs. 
+
+# Conclusion
+
+The results for search goods are consistent with the results from the paper. For the case of experience goods there are important deviations. First of all, for movies, extreme reviews are just as helpful as search goods' extreme reviews. However, as you saw from the bivariate analysis, the relationship between review extremity and helpfulness was quite complex(the function had two turning points). Secondly, word count (review depth) has little to no relationship with helpfulness of the review. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
