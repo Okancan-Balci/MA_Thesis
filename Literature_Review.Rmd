@@ -3,4 +3,18 @@ bibliography: references.bib
 link_citations: true
 ---
 
-# Fuck literature
+# Introduction
+
+Intro goes here.
+
+# Literature Review
+
+# Theoretical Framework
+
+# Data
+
+# Methodology
+
+# Results
+
+# Discussion and Conclusion
