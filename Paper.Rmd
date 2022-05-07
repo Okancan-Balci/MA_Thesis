@@ -1,0 +1,39 @@
+---
+title: "Dealing with Consumer Uncertainty: Online Product Reviews and What makes them helpful?"
+bibliography: references.bib
+link_citations: true
+---
+
+# Introduction
+
+-   E-Retail boomed.
+
+-   Reviews(electronic word-of-mouth) create opportunities for both sellers and buyers. On the buyers' side, reviews can be used to decrease search costs and consumer uncertainty.
+
+-   However, this boom of e-retail also created an abundance of product reviews on the internet so answering the question of "what makes a useful review?" is very important because reading more and more reviews can increase the search costs.
+
+-   Perceived Helpfulness is moderated by product types because different product types have different search cost responsiveness. Consider SEC Classification. Emphasize this a lot.
+
+-   The research on perceived helpfulness is still growing and there is no consensus on neither about methodology nor about important independent variables. In fact, there are conflicting results in the literature. Thus, creating a need for more analyses on different and unique data sets.
+
+-   Briefly talk about other research papers and present the data.
+
+-   Briefly talk about the results.
+
+-   
+
+# Literature Review
+
+# Theoretical Framework
+
+-   Nelson's two paper as an Economics theory. SEC Classification.
+
+-   Negativity Bias Theory.
+
+# Data
+
+# Methodology
+
+# Results
+
+# Discussion and Conclusion
