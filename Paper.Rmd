@@ -1,18 +1,19 @@
 ---
-title: "Dealing with Consumer Uncertainty: Online Product Reviews and What makes them helpful?"
+title: 'Dealing with Consumer Uncertainty: Online Product Reviews and What makes them helpful?'
 bibliography: references.bib
-link_citations: true
+link-citations: yes
+csl: ieee.csl
 ---
 
 # Introduction
 
--   E-Retail boomed.
+Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Customer Reviews (OCR). Online Customer Reviews come in the form of electronic word-of-mouth (EVOM) @dellarocas2003 and can be defined as "*peer-generated product evaluations posted on company or third party websites*" @mudambi2010. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011]. \###(need different citations here!!!)\###
 
--   Reviews(electronic word-of-mouth) create opportunities for both sellers and buyers. On the buyers' side, reviews can be used to decrease search costs and consumer uncertainty.
+OCR help customers by decreasing their search costs. Customers try to get information on the product they are going to buy so that they can decrease the uncertainty about that particular product. This information acquiring process is costly. Furthermore, this information gathering process might be more or less costly depending on the product type @10.2307/1830691.
 
--   However, this boom of e-retail also created an abundance of product reviews on the internet so answering the question of "what makes a useful review?" is very important because reading more and more reviews can increase the search costs.
+However, the increased rate of electronic commerce activity also created an abundance of product reviews on the internet. The vast amount of product reviews might increase the information overload on the customer [@sun2019; @fan2021]. Unfortunately, this information overload can make the search process even costlier because it is really time consuming to evaluate thousand of customer reviews. Additionally, not all reviews have the same informativeness level @pan2011. Therefore, answering the question of "what makes a helpful review?" is very important because reading more and more reviews can only increase the search cost. To make the understanding of a "helpful review" more clear we can define them as "*a peer-generated product evaluation that facilitates the consumer's purchase decision process*" @mudambi2010.
 
--   Perceived Helpfulness is moderated by product types because different product types have different search cost responsiveness. Consider SEC Classification. Emphasize this a lot.
+Since OCR don't share the same level of informativeness and usefulness @pan2011, most of the electronic retail websites implemented a very well known "helpfulness" feature to their customer review systems in order to help their customers navigate through thousand of reviews. On some websites, this feature is implemented in a way that helpful / unhelpful buttons are present and on some other websites, there is only a helpful button. In this paper, we acquired data from websites which support helpful / unhelpful system since it was found that helpfulness as a percentage (helpful votes over total votes) creates more powerful results than considering only helpful votes as a count variable @ahmad2015.
 
 -   The research on perceived helpfulness is still growing and there is no consensus on neither about methodology nor about important independent variables. In fact, there are conflicting results in the literature. Thus, creating a need for more analyses on different and unique data sets.
 
@@ -24,11 +25,15 @@ link_citations: true
 
 # Literature Review
 
+-   Give the background of perceived helpfulness
+
 # Theoretical Framework
 
 -   Nelson's two paper as an Economics theory. SEC Classification.
 
--   Negativity Bias Theory.
+-   Negativity Bias Theory and Loss Aversion
+
+-   Social Learning and Herding Effect
 
 # Data
 
