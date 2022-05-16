@@ -3,22 +3,31 @@ title: 'Dealing with Consumer Uncertainty: Online Product Reviews and What makes
 bibliography: references.bib
 link-citations: yes
 csl: ieee.csl
+output:
+  bookdown::pdf_document2: 
+    fig.caption: yes
+    includes:
+      in_header: non-float-fig.tex
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(tidytext)
 library(scales)
 library(AER)
 library(ggfortify)
 library(lubridate)
+library(bookdown)
+library(patchwork)
+
+theme_set(theme_bw(base_size = 12))
 
 options(scipen = 20)
 
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE,
                       fig.align = "center",
-                      fig.width = 8,
+                      fig.width = 7,
                       echo = FALSE)
 ```
 
@@ -26,7 +35,7 @@ knitr::opts_chunk$set(warning = FALSE,
 
 Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Customer Reviews (OCR). Online Customer Reviews come in the form of electronic word-of-mouth @dellarocas2003 and can be defined as "*peer-generated product evaluations posted on company or third party websites*" @mudambi2010. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011]. \###(need different citations here!!!)\###
 
-OCR help customers by decreasing their search costs. Customers try to get information on the product they are going to buy so that they can decrease the uncertainty about that particular product. This information acquiring process is costly. Furthermore, this information gathering process might be more or less costly depending on the product type, namely Search and Experience goods @10.2307/1830691 . Search goods, by nature, have traits that can be observed objectively before buying (GHz of a CPU of a Laptop). On the other hand, quality of Experience goods can't be evaluated before buying and evaluations could be very subjective (One needs to watch a movie in order to understand if it is a good movie or not.).
+OCR help customers by decreasing their search costs. Customers try to get information on the product they are going to buy so that they can decrease the uncertainty about that particular product. This information acquiring process is costly. Furthermore, this information gathering process might be more or less costly depending on the product type, namely Search and Experience goods @nelson1970 . Search goods, by nature, have traits that can be observed objectively before buying (GHz of a CPU of a Laptop). On the other hand, quality of Experience goods can't be evaluated before buying and evaluations could be very subjective (One needs to watch a movie in order to understand if it is a good movie or not.).
 
 However, the increased rate of electronic commerce activity also created an abundance of product reviews on the internet. The vast amount of product reviews might increase the information overload on the customer [@sun2019; @fan2021]. Unfortunately, this information overload can make the search process even costlier because it is really time consuming to evaluate thousand of customer reviews. Additionally, not all reviews have the same informativeness level @pan2011. Therefore, answering the question of "what makes a helpful review?" is very important because reading more and more reviews can only increase the search cost. To make the understanding of a "helpful review" more clear we can define them as "*a peer-generated product evaluation that facilitates the consumer's purchase decision process*" @mudambi2010.
 
@@ -62,9 +71,9 @@ Review Age is an indicator of how long the time passed after a review published 
 
 -   extend this later and try to connect to the methodology
 
-Nelson (1970) [@10.2307/1830691] differentiated goods based on their search and experience attributes [@nelson1974economic; @nelson1974; @nelson1981]. Search Attributes are the qualities that can be assessed before purchase. On the contrary, Experience Attributes can only be assessed by using the product itself, in other words evaluation is only possible after purchase. A single good can have both search and experience attributes. Depending on its dominant attributes the good can be classified as Search or Experience. A product's Total Cost consists of both Search Cost and Product Cost. This Search Cost is higher for Experience Goods, in other words, information search is costlier for Experience Goods than Search Goods.
+Nelson (1970) [@nelson1970] differentiated goods based on their search and experience attributes [@nelson1974economic; @nelson1974; @nelson1981]. Search Attributes are the qualities that can be assessed before purchase. On the contrary, Experience Attributes can only be assessed by using the product itself, in other words evaluation is only possible after purchase. A single good can have both search and experience attributes. Depending on its dominant attributes the good can be classified as Search or Experience. A product's Total Cost consists of both Search Cost and Product Cost. This Search Cost is higher for Experience Goods, in other words, information search is costlier for Experience Goods than Search Goods.
 
-To explain it in a more generalized way, let's also define what "search" is. Nelson (1970) [@10.2307/1830691] defines search as "The most obvious procedure available to the consumer in obtaining information about price or quality is search". People will always prefer sampling or trial use given the fact that the cost of the sampling or trial is lower than the cost of the search. This is why search is costlier for Experience Goods. For instance, getting information about a car (test drive, guides on the web etc.) is less costly than actually buying it. Even though a car has experience attributes, with this logic it is considered as a search good @klein1998.
+To explain it in a more generalized way, let's also define what "search" is. Nelson (1970) [@nelson1970] defines search as "The most obvious procedure available to the consumer in obtaining information about price or quality is search". People will always prefer sampling or trial use given the fact that the cost of the sampling or trial is lower than the cost of the search. This is why search is costlier for Experience Goods. For instance, getting information about a car (test drive, guides on the web etc.) is less costly than actually buying it. Even though a car has experience attributes, with this logic it is considered as a search good @klein1998.
 
 -   might explain why negative reviews arent that helpful for movies
 
@@ -82,9 +91,9 @@ Negativity Bias Theorem has four main aspects, namely, higher negative potency -
 
 ## Data Collection
 
-The data was scraped with a custom web scraper which was constructed with Selenium Framework for Pyhton 3 @10.5555/1593511. The scraper got the customer reviews from IMDB and BestBuy. The former is the biggest platform for Movies and TV Shows, the latter is one of the biggest electronic retailers in United States of America. Both websites host a great amount of online reviews. After the data was collected it was further transformed and analyzed with the help of R Programming Language [@RCore; @Tidyverse; @Tidytext].
+The data was scraped with a custom web scraper which was constructed with Selenium Framework for Pyhton 3 @python3. The scraper got the customer reviews from IMDB and BestBuy. The former is the biggest platform for Movies and TV Shows, the latter is one of the biggest electronic retailers in United States of America. Both websites host a great amount of online reviews. After the data was collected it was further transformed and analyzed with the help of R Programming Language [@RCore; @Tidyverse; @Tidytext].
 
-Online Customer Reviews from IMDB were collected as an experience goods data since movies can be considered as pure-experience goods and their search attributes are very limited. It is nearly impossible to evaluate a movie before watching it. Furthermore, evaluations for a movie can both have subjective (personal attachment to the protagonist, atmosphere of the movie etc.) and objective perspectives (writing, production quality etc.). There are also numerous studies that analyzed movies as experience goods[@10.2307/1830691; @liu2014; @ghose2006; @baek2012; @lee2016].
+Online Customer Reviews from IMDB were collected as an experience goods data since movies can be considered as pure-experience goods and their search attributes are very limited. It is nearly impossible to evaluate a movie before watching it. Furthermore, evaluations for a movie can both have subjective (personal attachment to the protagonist, atmosphere of the movie etc.) and objective perspectives (writing, production quality etc.). There are also numerous studies that analyzed movies as experience goods[@nelson1970] ; @liu2014; @ghose2006; @baek2012; @lee2016].
 
 BestBuy is a very big electronics retailer and because of this the website offers a sizable number of OCR for search goods. Contrary to experience goods, search goods usually have more objectively quantifiable traits. For example, resolution or screen size of a TV, RAM or GPU of a Laptop, storage or battery lifetime of a Smart Phone. Additionally, in the literature, TVs, Laptops and Phones were used as search goods [@mudambi2010; @sun2019; @baek2012; @ren2019]. Therefore, we collected search goods data from BestBuy.
 
@@ -92,9 +101,9 @@ BestBuy is a very big electronics retailer and because of this the website offer
 
 From IMDB reviews of 22 movies were collected as experience goods. In total 22 movies account for 31,863 reviews. From BestBuy, total of 383,357 reviews were collected as search goods. Specifically, 201,113 reviews for TVs, 130,270 for Laptops and 51,974 for Phones. However, in the data there are many reviews that were never voted. To make sure that we are analyzing reviews that were actually read by people, we set a threshold for Total Reviews as five. In other words, we removed reviews that have less than 5 Total Votes [@choi2020; @baek2012]. At the very end, we were left with 15,024 observations for experience goods and 8,042 observations for search goods. It should be noted that `r round(15024 / 31863, digits = 2) * 100` percent of the reviews had total votes of 5 or greater for experience goods, whereas only `r round(8042 / 383357, digits = 2)* 100` percent of the search goods were voted at least 5 times.
 
-It should be noted that in IMDB data there were cases (20 observations to be exact) where the same reviews were written by different user names. We removed all duplicates along with original reviews because the reviews had different helpfulness ratios.
+It should be noted that in IMDB data there were cases (20 observations to be exact) where the same reviews were written by different user names. All duplicates along with original reviews were removed because the reviews had different helpfulness ratios.
 
-## Variables and EDA
+## Exploratory Data Analysis
 
 ```{r Data_Prep_Experience}
 # Experience Goods
@@ -276,7 +285,173 @@ search_goods <- search_goods %>%
   mutate(Freshness = as.integer(Date - First_Date))
 ```
 
-### Independent Variable
+In this section both dependent and independent variables are going to be introduced. The goal of this section is not "confirmatory" whatsoever. As a researcher, I believe sharing the data that I used in the study transparently increases the research's reproducibility value.
+
+As an outline, firstly the dependent variable is going to be introduced in a univariate manner and then independent variables are going to come into the picture both in univariate and bivariate way.
+
+### Dependent Variable
+
+$$
+Perceived\ Helpfulness = \frac{Helpful\ Votes}{Total\ Votes}
+$$
+
+The ratio of helpfulness is derived from the formula above. Below on Figure \@ref(fig:IV-Hist-Search) the distribution of the helpfulness for search goods can be observed.
+
+```{r IV-Hist-Search, fig.cap="Distribution of the Helpfulness of Search Goods"}
+
+search_goods %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 10)+
+  labs(y = NULL)
+  
+```
+
+As it can be seen the distribution is rather skewed. Looks like in the electronics case, readers find some reviews very helpful. In fact, in the data there is one review which had over 170 helpful votes with zero unhelpful votes. On the other hand, distribution for experience goods on Figure \@ref(fig:IV-Hist-Exp) presents a different picture. This time helpfulness ratio is sort of normally distributed. There aren't very helpful reviews. The most helpful review interval seems to be lying between 70% to 80%.
+
+```{r IV-Hist-Exp, fig.cap="Distribution of the Helpfulness of Experience Goods"}
+movies_data %>% 
+  ggplot(aes(Helpfulness))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 10)+
+  labs(y = NULL)
+```
+
+Hong et al. (2014) [@hong2014; @sun2019] states that consumers likely to form homogeneous opinions about search goods. On the contrary, the same paper suggests that consumers' opinions are more heterogeneous on experience goods. Intuitively, what these histograms show is the same. For instance, positive or negative attributes of search goods can be expressed in a limited number of ways. The storage space of a phone might be small or CPU of a laptop might not be fast as expected. Thus, one good review is be enough to reveal the quality of a product. I think this is why we see such a big spike at 100% on Figure \@ref(fig:IV-Hist-Search). In the movies (experience good) case on Figure \@ref(fig:IV-Hist-Exp), we see that readers usually disagree with each other because the distribution of the perceived helpfulness distributed around 50%. This is because evaluation process of movies is rather subjective. One person might not like Spider-Man: Homecoming and another would love it.
+
+-   you can elaborate a little bit more about how movies cant be evaluated objectively
+
+### Independent Variables
+
+#### Review Rating (Review Extremity)
+
+Review Rating is the star rating that was given by the reviewer as an evaluation of a product.
+
+For both search and experience goods the bi-modality of the distributions can be observed on Figure \@ref(fig:Search-Rating) (A) and Figure \@ref(fig:Experience-Rating) (A) respectively. Hu et al. @hu2006 also pointed out a similar distribution concerning Online Product Reviews. This might mean that consumers usually tend to write product reviews when they are extremely happy or unhappy with the product.
+
+Because the data was taken from two different websites (BestBuy and IMDB), there are two different scales. For IMDB that is 1 to 10 and for BestBuy the scale is between 1 and 5. To make the interpretation of the regression coefficients uniform, IMDB's scale was divided by 2.
+
+On Figure \@ref(fig:Search-Rating) (B) and Figure \@ref(fig:Experience-Rating) (B) the bivariate relationship between perceived helpfulness and review extremity can be seen. Again, as a researcher, I must emphasize that this analysis is not confirmatory. On figures, we can observe "U" type of relationship for both Search and Experience goods, though the non-linearity seems to be stronger with Search goods. This might suggest that on the average extreme reviews might be more helpful than moderate reviews [@mudambi2010; @cao2011; @liu2014; @wang2018; @ghose2006]. On the other hand, it is observable that positive reviews on the average are more helpful than the rest. This might indicate that there is a linear positive relationship [@pan2011; @schindler2012; @korfiatis2012; @lee2016; @choi2020].
+
+```{r Search-Rating, fig.cap="The Distribution(A) and the Scatter Plot(B) of Review Rating for Search Goods.", fig.height=7}
+p1 <- search_goods %>% 
+  ggplot(aes(Rating))+
+  geom_bar(fill = "steelblue")+
+  labs(y = "Count", x = NULL)
+
+p2 <- search_goods %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(method = "loess", color = "steelblue")+
+  labs(x = "Review Rating")
+
+plots <-  p1 / p2
+
+plots + plot_annotation(tag_levels = "A",
+                        title = "The Distribution(A) and the Scatter Plot(B) of Review Rating for Search Goods.")
+```
+
+```{r Experience-Rating, fig.cap="The Distribution(A) and the Scatter Plot(B) of Review Rating for Experience Goods.", fig.height=7}
+p1 <- movies_data %>% 
+  ggplot(aes(Rating))+
+  geom_bar(fill = "steelblue")+
+  scale_x_continuous(n.breaks = 10)+
+  labs(y = "Count", x = NULL)
+
+p2 <- movies_data %>% 
+  ggplot(aes(Rating, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 10)+
+  labs(x = "Review Rating")
+
+plots <-  p1 / p2
+
+plots + plot_annotation(tag_levels = "A",
+                        title = "The Distribution(A) and the Scatter Plot(B) of Review Rating for Experience Goods.")
+```
+
+#### Review Length (Review Depth)
+
+Review Length is the number of the words in a given review.
+
+The exponential distribution of the number of words can be observed for both good types on Figure \@ref(fig:Search-Length) (A) and Figure \@ref(fig:Experience-Length) (A). This means that reviews become less prevalent as they get longer. This might suggest logarithmic transformation which can increase the model fit. For the transformed distributions see Figure \@ref(fig:Search-Length) (B) and Figure \@ref(fig:Experience-Length) (B).
+
+-   you might add confidence interval for mean on plots.
+
+The bivariate relationship between the number of words and Helpfulness seems to be varying for different product types. For Search goods on Figure \@ref(fig:Search-Length) (C) there is a clear positive relationship [@mudambi2010; @hong2017; @liu2014; @wang2018; @korfiatis2012; @lee2016; @lee2014; @choi2020]. However, this positive relationship appears to stop at a threshold[@schindler2012; @huang2015; @baek2012; @kuan2015; @eslami2018]. With this in mind, logarithmic transformation might make more sense (see Figure \@ref(fig:Search-Length) (D)) for modelling purposes. For Experience goods, on the other hand, there seems to be a weak negative relationship or no relationship at all (see Figure \@ref(fig:Experience-Length) (C) and (D)).
+
+-   maybe add more framework for experience goods and no relationship
+
+```{r Search-Length, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Length for Search Goods and respective logarithmic transformations (B), (D)"}
+p1 <- search_goods %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = "Number of the Words")
+
+p1_log <- search_goods %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  scale_x_log10(n.break = 8)+
+  labs(y = NULL, x = "log10(Number of the Words)")
+
+p2 <- search_goods %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(x = "Number of the Words")
+
+p2_log <- search_goods %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_log10(n.breaks = 8)+
+  labs(x = "log10(Number of the Words)")
+
+plots <-  p1 / p1_log / p2 / p2_log
+
+plots + plot_annotation(
+  title = "The Distribution(A) and the Scatter Plot(C) of Review Length for Search Goods and respective logarithmic transformations (B), (D)",
+  tag_levels = "A"
+)
+```
+
+```{r Experience-Length, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Length for Experience Goods and respective logarithmic transformations (B), (D)"}
+p1 <- movies_data %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = "Number of the Words")
+
+p1_log <- movies_data %>% 
+  ggplot(aes(Word_Count))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  scale_x_log10(n.break = 8)+
+  labs(y = NULL, x = "log10(Number of the Words)")
+
+p2 <- movies_data %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(x = "Number of the Words")
+
+p2_log <- movies_data %>% 
+  ggplot(aes(Word_Count, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_log10(n.breaks = 8)+
+  labs(x = "log10(Number of the Words)")
+
+plots <-  p1 / p1_log / p2 / p2_log
+
+plots + plot_annotation(
+  title = "The Distribution(A) and the Scatter Plot(C) of Review Length for Experience Goods and respective logarithmic transformations (B), (D)",
+  tag_levels = "A"
+)
+```
 
 ## Method
 
