@@ -8,6 +8,7 @@ output:
     fig.caption: yes
     includes:
       in_header: non-float-fig.tex
+    toc_depth: 4
 ---
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -347,8 +348,7 @@ p2 <- search_goods %>%
 
 plots <-  p1 / p2
 
-plots + plot_annotation(tag_levels = "A",
-                        title = "The Distribution(A) and the Scatter Plot(B) of Review Rating for Search Goods.")
+plots + plot_annotation(tag_levels = "A")
 ```
 
 ```{r Experience-Rating, fig.cap="The Distribution(A) and the Scatter Plot(B) of Review Rating for Experience Goods.", fig.height=7}
@@ -367,8 +367,7 @@ p2 <- movies_data %>%
 
 plots <-  p1 / p2
 
-plots + plot_annotation(tag_levels = "A",
-                        title = "The Distribution(A) and the Scatter Plot(B) of Review Rating for Experience Goods.")
+plots + plot_annotation(tag_levels = "A")
 ```
 
 #### Review Length (Review Depth)
@@ -413,7 +412,6 @@ p2_log <- search_goods %>%
 plots <-  p1 / p1_log / p2 / p2_log
 
 plots + plot_annotation(
-  title = "The Distribution(A) and the Scatter Plot(C) of Review Length for Search Goods and respective logarithmic transformations (B), (D)",
   tag_levels = "A"
 )
 ```
@@ -448,12 +446,156 @@ p2_log <- movies_data %>%
 plots <-  p1 / p1_log / p2 / p2_log
 
 plots + plot_annotation(
-  title = "The Distribution(A) and the Scatter Plot(C) of Review Length for Experience Goods and respective logarithmic transformations (B), (D)",
   tag_levels = "A"
 )
 ```
 
-## Method
+#### Freshness of A Review
+
+Review Freshness indicates how recent a review is. To engineer this variable following steps were taken:
+
+1.  The first review date for a particular brand and model of a product (movie, phone, laptop, tv) was taken.
+2.  The first dates for particular products then subtracted from other reviews' dates under the respective brand and model resulting an integer variable representing days.
+3.  Bigger numbers represent more recent reviews.
+
+Distributions of both product types resemble exponential distribution (see Figure \@ref(fig:Search-Freshness) (A) and Figure \@ref(fig:Experience-Freshness) (A)). Again a logarithmic transformation might be useful here (see Figure \@ref(fig:Search-Freshness) (B) and Figure \@ref(fig:Experience-Freshness) (B)) . Interestingly, even after 3 years from the release date some products are still getting reviewed from customers.
+
+On the scatter plots a weak relationship between perceived helpfulness and review freshness could be observed. The smoother line suggests both positive [@lee2014; @choi2020; @wu2021] and negative [@liu2014; @li2019; @zhou2019] linear relationship between two variables. This non-linearity may explain different findings in the literature.
+
+```{r Search-Freshness, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Freshness for Search Goods and respective logarithmic transformations (B), (D)"}
+p1 <- search_goods %>% 
+  ggplot(aes(Freshness))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = "Freshness of Review")
+
+p1_log <- search_goods %>% 
+  ggplot(aes(Freshness + 1))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  scale_x_log10(n.break = 8)+
+  labs(y = NULL, x = "log10(Freshness of Review + 1)")
+
+p2 <- search_goods %>% 
+  ggplot(aes(Freshness, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(x = "Freshness of Review")
+
+p2_log <- search_goods %>% 
+  ggplot(aes(Freshness + 1, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_log10(n.breaks = 8)+
+  labs(x = "log10(Freshness of Review + 1)")
+
+plots <- p1 / p1_log / p2 / p2_log
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+
+```
+
+```{r Experience-Freshness, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Freshness for Experience Goods and respective logarithmic transformations (B), (D)"}
+p1 <- movies_data %>% 
+  ggplot(aes(Freshness))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = "Freshness of Review")
+
+p1_log <- movies_data %>% 
+  ggplot(aes(Freshness + 1))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  scale_x_log10(n.break = 8)+
+  labs(y = NULL, x = "log10(Freshness of Review + 1)")
+
+p2 <- movies_data %>% 
+  ggplot(aes(Freshness, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(x = "Freshness of Review")
+
+p2_log <- movies_data %>% 
+  ggplot(aes(Freshness + 1, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_log10(n.breaks = 8)+
+  labs(x = "log10(Freshness of Review + 1)")
+
+plots <- p1 / p1_log / p2 / p2_log
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+
+```
+
+#### Proportion of Negative Words
+
+Negative words were derived by using NRC Word-Emotion Association Lexicon @Mohammad13. A lexicon is basically a dictionary of words. These words might have similar emotions or sentiments. In this case, negative words lexicon was used in order to engineer this variable.
+
+$$
+Negative\ Word \% = \frac{Number\ of\ Matched\ Negative\ Word}{Total\ Words\ in\ Review} 
+$$
+
+These steps were taken in order to create this variable:
+
+1.  Words in a review were tokenized.
+2.  Tokenized words were matched with the lexicon.
+3.  Matches were counted and divided by the total number of words with the respective review then multiplied by 100 in order to make regression results more interpretable.
+4.  Logarithmic transformation was applied in order to scale the variable in a better way.
+
+On Figure \@ref(fig:Search-Neg) (A) and Figure \@ref(fig:Experience-Neg) (A) the distributions of the variable for both good types can be seen. On plots, x-axis labels were given in the logarithm of base 10 so 1.00 on the x-axis implies that 10% of the review was negative words. It should be noted that `r round(mean(search_goods$negative == 0), digits = 2)` percent of the reviews for search goods don't have any negative words in them. For experience goods this number is `r round(mean(movies_data$negative == 0), digits = 2)` percent.
+
+-   comment on scatterplot
+
+```{r Search-Neg, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Search Goods"}
+p1 <- search_goods %>% 
+  ggplot(aes(negative))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = NULL)
+
+p2 <- search_goods %>% 
+  ggplot(aes(negative, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
+
+plots <- p1 / p2
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+```
+
+```{r Experience-Neg, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Experience Goods"}
+p1 <- movies_data %>% 
+  ggplot(aes(negative))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = NULL)
+
+p2 <- movies_data %>% 
+  ggplot(aes(negative, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
+
+plots <- p1 / p2
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+```
+
+#### Proportion of Positive Words
+
+## Hypothesis Development and Method
 
 # Results
 
