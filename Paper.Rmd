@@ -20,6 +20,7 @@ library(ggfortify)
 library(lubridate)
 library(bookdown)
 library(patchwork)
+library(GGally)
 
 theme_set(theme_bw(base_size = 12))
 
@@ -549,7 +550,9 @@ These steps were taken in order to create this variable:
 
 On Figure \@ref(fig:Search-Neg) (A) and Figure \@ref(fig:Experience-Neg) (A) the distributions of the variable for both good types can be seen. On plots, x-axis labels were given in the logarithm of base 10 so 1.00 on the x-axis implies that 10% of the review was negative words. It should be noted that `r round(mean(search_goods$negative == 0), digits = 2)` percent of the reviews for search goods don't have any negative words in them. For experience goods this number is `r round(mean(movies_data$negative == 0), digits = 2)` percent.
 
--   comment on scatterplot
+On Figure \@ref(fig:Search-Neg) (B), non-linear relationship between perceived helpfulness and the proportion of negative words can be observed search goods. It should be kept in mind that as the proportion increases the sample size decreases. This might mean that any statistical test for non-linearity would have low power. On the other hand, somewhat weak negative linear relationship between perceived helpfulness and proportion of negative words can be seen for experience goods on Figure \@ref(fig:Experience-Neg) (B).
+
+-   need citation here!
 
 ```{r Search-Neg, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Search Goods"}
 p1 <- search_goods %>% 
@@ -594,6 +597,89 @@ plots + plot_annotation(
 ```
 
 #### Proportion of Positive Words
+
+This variable was engineered in the same manner with its negative words counterpart. In this case, however, reviews of both good types have more positive words in them proportionally when compared to negative words. `r round(mean(search_goods$positive == 0), digits = 2)` percent of the reviews of search goods don't have any positive words in them and this number is only `r round(mean(movies_data$positive == 0), digits = 2)` for experience goods. Except for zero values both distributions are looking quite normal (see Figure \@ref(fig:Search-Pos) (A) and Figure \@ref(fig:Experience-Pos) (A)).
+
+On scatter plots (see Figure \@ref(fig:Search-Pos) (B) and Figure \@ref(fig:Experience-Pos) (B)), relationships between perceived helpfulness and proportion of positive words are looking very similar to their negative counterparts. Furthermore, these plots kind of similar to perceived helpfulness versus number of words plots (see Figure \@ref(fig:Search-Length) (B) and Figure \@ref(fig:Experience-Length) (B)). In a sense, both negative and positive proportions imply number of words. As the proportion increases so does the number of words. That's why aforementioned figures show similar relationships between variables. On higher dimensions these relationships might be different. That is why Exploratory Data Analysis should never be conducted in a confirmatory sense.
+
+-   needs sth from literature here as well
+
+```{r Search-Pos, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Search Goods"}
+p1 <- search_goods %>% 
+  ggplot(aes(positive))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = NULL)
+
+p2 <- search_goods %>% 
+  ggplot(aes(positive, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
+
+plots <- p1 / p2
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+```
+
+```{r Experience-Pos, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Experience Goods"}
+p1 <- movies_data %>% 
+  ggplot(aes(positive))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = NULL, x = NULL)
+
+p2 <- movies_data %>% 
+  ggplot(aes(positive, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue")+
+  scale_x_continuous(n.breaks = 8)+
+  labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
+
+plots <- p1 / p2
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+```
+
+### Control Variables
+
+"Total Votes" is going to be used as a control variable since 80% Perceived Helpfulness can arise from both 4 over 5 Helpful votes or 80 over 100 Helpful votes [@mudambi2010; @choi2020].
+
+### Correlation Table
+
+Before progressing to the modelling section, it would be a good practice to check the correlations between independent and control variables in order not to cause any multi-colinearity problems. As it can be seen on Figure \@ref(fig:Correlations) there aren't any major correlations between independent and control variables for both good types.
+
+```{r Correlations, fig.cap="Correlations between Independent Variables.", fig.height=8}
+p1 <- search_goods %>% 
+  select(Rating, Word_Count, Freshness, positive, negative, Total_Vote) %>% 
+  rename(Proportion_Positive = positive) %>% 
+  rename(Proportion_Negative = negative) %>% 
+  mutate(Word_Count = log10(Word_Count),
+         Total_Vote = log10(Total_Vote)) %>% 
+  ggcorr(label = TRUE, hjust = 0.75, nbreaks = 5,low = "steelblue", mid = "grey95",
+         high = "darkred", label_round = 2, layout.exp = 1)+
+  labs(title = "Search Goods")+
+  theme_void()
+
+p2 <- movies_data %>% 
+  select(Rating, Word_Count, Freshness, positive, negative, Total_Vote) %>% 
+  rename(Proportion_Positive = positive) %>% 
+  rename(Proportion_Negative = negative) %>% 
+  mutate(Word_Count = log10(Word_Count),
+         Total_Vote = log10(Total_Vote)) %>% 
+  ggcorr(label = TRUE, hjust = 0.75, nbreaks = 5,low = "steelblue", mid = "grey95",
+         high = "darkred", label_round = 2, layout.exp = 1)+
+  labs(title = "Experience Goods")+
+  theme_void()
+
+(p1 / p2) +
+  plot_layout(guides = "collect")
+```
 
 ## Hypothesis Development and Method
 
