@@ -21,6 +21,7 @@ library(lubridate)
 library(bookdown)
 library(patchwork)
 library(GGally)
+library(stargazer)
 
 theme_set(theme_bw(base_size = 12))
 
@@ -683,7 +684,56 @@ p2 <- movies_data %>%
 
 ## Hypothesis Development and Method
 
+Korfiatis et al. (2012) @korfiatis2012 found that neutral rated reviews (3 out of 5 stars) imply indifference to readers. This means that prior information of the potential buyer can't be influenced by these neutral reviews and likely to be found less helpful compared to extreme reviews (1 or 5 stars) [@wang2018; @liu2014; @cao2011; @ghose2006]. As the reviews get more extremely rated they might strengthen or sway prior information that a potential consumer has, making them more helpful. This extremeness has more objective nature for Search Goods since there are more ways to express pleasantness or unpleasantness for a particular product. For instance a bad design in a laptop might cause fans to make much more noise than they should normally do. This information along with a very low rating may signal there are some inherent problems with that particular product, making the feedback more helpful. On the other hand, for Experience Goods and in this specific case movies, opinions for a given product might be much more subjective. For example, a reviewer might find a movie "childish" and give it one star, the other might find the movie "light-hearted and colorful" and give 5 stars, making the helpfulness subjective and decreasing its usefulness. Furthermore, for experience goods, it was found that opposite extremes to a potential buyer's prior expectations aren't impactful on the decision making process @hoch1989. In other words, prior expectations play a bigger role in decision making process for experience goods. Therefore it is hypothesized that:
+
+*H1: There is a U-Shaped relationship between Perceived Helpfulness and Review Rating. This U-Shape is stronger/weaker for Search/Experience Goods.*
+
+In order to decrease the uncertainty, search costs must be reduced. In \@ref(search-and-experience-goods-classification) it was mentioned that the action of search was costlier for Experience Goods than Search Goods. Furthermore, people tend to have homogeneous opinions about Search Goods @hong2014 . This might mean that information cues are much more uniform for Search Goods. [@huang2015; @baek2012]. In other words, there are limited ways to construct a review because search attributes are more objective. Therefore, there might be a positive linear relationship between Perceived Helpfulness and Review Length. However, since the attributes of electronics are objectively identifiable and limited (storage space of a phone, RAM of a laptop, color depth of a TV etc.) there aren't much to review for a reviewer. Because of this, there might be diminishing marginal returns to Review Length [@schindler2012; @huang2015]. On the contrary, for Experience Goods, people have tendency to form heterogeneous opinions @hong2014. This means that movie reviews are much more subjective by nature. Since there are less objectivity, a helpful review to one person might not be helpful to another. However, since there are other ways to objectively evaluate a movie, a weaker positive linear relationship is expected. Therefore it is hypothesized that:
+
+*H2: There is a positive relationship between logarithm of Review Length and Perceived Helpfulness. This effect is stronger for Search Goods than Experience Goods*.
+
+-   method
+
+Tobit Regression is selected as the method because of three reasons. First of all, dependent variable, perceived helpfulness, is defined in a continuous range from 0 to 1. The second reason as stated by Mudambi (2010) @mudambi2010 is the potential selection bias in the sample. Unfortunately, it is not possible to know how many people read a particular review. Neither BestBuy nor IMDB discloses this information. Because of this, being included in a sample could be correlated with independent variables. For instance, potentially more voted reviews could attract more readers or readers could be drawn to reviews which have certain ratings. Lastly, there are many studies from the literature that used Tobit Regression as their research method [@mudambi2010; @korfiatis2012; @huang2015; @choi2020; @ren2019].
+
 # Results
+
+You can find the results at Table \@ref(tab:Reg-Results)
+
+```{r}
+search_tobit <- tobit(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote) + log10(Word_Count) * Rating + log10(Freshness+1) + positive + negative,
+                     data = search_goods,
+                     left = 0, right = 1)
+
+experience_tobit <- tobit(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote) + log10(Word_Count) * Rating + log10(Freshness+1) + positive + negative,
+                     data = movies_data,
+                     left = 0, right = 1)
+
+
+search_lm <- lm(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote) + log10(Word_Count) * Rating + log10(Freshness+1) + positive + negative,
+                     data = search_goods)
+
+experience_lm <- lm(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote) + log10(Word_Count) * Rating + log10(Freshness+1) + positive + negative,
+                     data = movies_data)
+
+```
+
+```{r Reg-Results, results='asis'}
+stargazer(list("Search Tobit" = search_tobit,
+               "Experience Tobit" = experience_tobit,
+               "Search Linear" = search_lm,
+               "Experience Linear" = experience_lm),
+          type = "latex",
+          header = FALSE,
+          model.numbers = FALSE,
+          column.labels = c("Search", "Experience", "Search", "Experience"),
+          covariate.labels = c("Rating", "Rating Squared", "log10(Review Length)",
+                               "log10(Total Vote)", "log10(Freshness + 1)",
+                               "Positive Proportion",  
+                               "Negative Proportion", "Rating x Review Length"),
+          star.cutoffs = c(0.05, 0.01, 0.001),
+          label = "tab:Reg-Results")
+```
 
 # Discussion and Conclusion
 
