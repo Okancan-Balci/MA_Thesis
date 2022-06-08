@@ -36,17 +36,17 @@ knitr::opts_chunk$set(warning = FALSE,
 
 # Introduction
 
-Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Customer Reviews (OCR). Online Customer Reviews come in the form of electronic word-of-mouth @dellarocas2003 and can be defined as "*peer-generated product evaluations posted on company or third party websites*" @mudambi2010. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011]. \###(need different citations here!!!)\###
+Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Customer Reviews (OCR). Online Customer Reviews come in the form of electronic word-of-mouth @dellarocas2003 and can be defined as "*peer-generated product evaluations posted on company or third party websites*" @mudambi2010. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011; @dellarocas2007].
 
 OCR help customers by decreasing their search costs. Customers try to get information on the product they are going to buy so that they can decrease the uncertainty about that particular product. This information acquiring process is costly. Furthermore, this information gathering process might be more or less costly depending on the product type, namely Search and Experience goods @nelson1970 . Search goods, by nature, have traits that can be observed objectively before buying (GHz of a CPU of a Laptop). On the other hand, quality of Experience goods can't be evaluated before buying and evaluations could be very subjective (One needs to watch a movie in order to understand if it is a good movie or not.).
 
-However, the increased rate of electronic commerce activity also created an abundance of product reviews on the internet. The vast amount of product reviews might increase the information overload on the customer [@sun2019; @fan2021]. Unfortunately, this information overload can make the search process even costlier because it is really time consuming to evaluate thousand of customer reviews. Additionally, not all reviews have the same informativeness level @pan2011. Therefore, answering the question of "what makes a helpful review?" is very important because reading more and more reviews can only increase the search cost. To make the understanding of a "helpful review" more clear it can defined as "*a peer-generated product evaluation that facilitates the consumer's purchase decision process*" @mudambi2010.
+However, the increased rate of electronic commerce activity also created an abundance of product reviews on the internet. The vast amount of product reviews might increase the information overload on the customer [@sun2019; @fan2021]. Unfortunately, this information overload can make the search process even costlier because it is really time consuming to evaluate thousand of customer reviews. Additionally, not all reviews have the same informativeness level @pan2011. Therefore, answering the question of "what makes a helpful review?" is very important because reading more and more reviews can only increase the search cost. To make the understanding of a "helpful review" more clear it can be defined as "*a peer-generated product evaluation that facilitates the consumer's purchase decision process*" @mudambi2010.
 
 Since OCR don't share the same level of informativeness and usefulness @pan2011, most of the electronic retail websites implemented a very well known "helpfulness" feature to their customer review systems in order to help their customers navigate through thousand of reviews. On some websites, this feature is implemented in a way that helpful / unhelpful buttons are present and on some other websites, there is only a helpful button. In this paper, the data was acquired from websites which support helpful / unhelpful system since it was found that helpfulness as a percentage (helpful votes over total votes) creates more powerful results than considering only helpful votes as a count variable @ahmad2015.
 
 The research on perceived helpfulness is still growing. In Social and Behavioral Sciences, it is common to have conflicting papers and results in the literature @hunter1991. In this case, the study on perceived helpfulness is not an exception. Because of this reason, more empirical studies on perceived helpfulness are required. This paper aims to add one more perspective to growing literature of customer reviews and review helpfulness.
 
--   Briefly talk about other research papers and present the data.
+This study uses secondary data. The reviews were collected from two websites. Namely, IMDB and BestBuy. The data was scrapped with Selenium Webdriver for Python @python3. Over 400,000 reviews and their meta data were gathered initially. After the data transformation process the final sample size was over 23,000.
 
 -   Briefly talk about the results.
 
@@ -87,8 +87,6 @@ To explain it in a more generalized way, let's also define what "search" is. Nel
 Humans tend to care about losses more than same amount of gains. Losing 100\$ is psychologically much more impactful than finding 100\$. This behavior is best explained by "loss aversion" from Behavioral Economics. [@kahneman1979; @schindler2017]. Loss Aversion has a strong connection to Negativity Bias Theorem since negative cues might be used as an early warning against potential losses @herr1991.
 
 Negativity Bias Theorem has four main aspects, namely, higher negative potency -- Negative signals have more impact on people than positive ones. --, steeper negative gradients -- Negativity of negatives events grows faster in space and time than positive ones. --, higher negative dominance -- A combination of equally negative and positive cues results in more negative impressions. --, and various negative differentiations -- Negative cues produce more diverse individual responses than positive ones. --[@rozin2001; @sen2007; @eslami2018].
-
--   Social Learning and Herding Effect
 
 # Research Methodology
 
@@ -156,7 +154,11 @@ movies_data <- movies_data %>%
 sentiments_agg <- movies_data %>%
   mutate(Review = str_to_lower(Review, locale = "en")) %>% 
   unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
-  inner_join(get_sentiments("nrc")) %>% 
+  inner_join(get_sentiments("nrc") %>% 
+               filter(!word %in% c("cage", "john","climax", "force", "king", "mad",
+                                   "fury", "hardy","margin", "harry", "venom",
+                                   "marvel", "stark", "iron", "vulture", "green",
+                                   "goblin", "bale"))) %>% 
   count(Doc_ID, sentiment, name = "Sent_Count") %>% 
   pivot_wider(names_from = sentiment, values_from = Sent_Count, values_fill = 0)
   
@@ -252,7 +254,11 @@ search_goods <- search_goods %>%
 sentiments_agg <- search_goods %>%
   mutate(Review = str_to_lower(Review, locale = "en")) %>% 
   unnest_tokens(output = word, input = Review, to_lower = FALSE) %>% 
-  inner_join(get_sentiments("nrc")) %>% 
+  inner_join(get_sentiments("nrc")%>% 
+               filter(!word %in% c("cage", "john","climax", "force", "king", "mad",
+                                   "fury", "hardy","margin", "harry", "venom",
+                                   "marvel", "stark", "iron", "vulture", "green",
+                                   "goblin", "bale"))) %>% 
   count(Doc_ID, sentiment, name = "Sent_Count") %>% 
   pivot_wider(names_from = sentiment, values_from = Sent_Count, values_fill = 0)
   
@@ -700,20 +706,30 @@ Potential buyers may find more recent reviews helpful because they may want to g
 
 *H4: There is a positive relationship between Perceived Helpfulness and Freshness of a Review for both Search and Experience Goods.*
 
-So far it should be understood that people try to cut down their losses. That is why negative cues draw more attention than positive ones. It is known that Review Rating is the satisfaction level of a customer towards a product. However, Review Rating itself isn't enough to convey the information about how a customer expresses her satisfaction / dissatisfaction towards a product. The way a customer expresses her opinion on a product might have an effect on the perceived helpfulness of a review. In this case
+So far it should be understood that people try to cut down their losses. That is why negative cues draw more attention than positive ones [@kahneman1979; @schindler2017]. Additionally, people find negative information more credible and persuasive than positive information [@ito1998; @Kanouse1984ExplainingNB]. It is known that Review Rating is the satisfaction level of a customer towards a product. However, Review Rating itself isn't enough to convey the information about how a customer expresses her satisfaction / dissatisfaction towards a product. The way a customer expresses her opinion on a product might have an effect on the perceived helpfulness of a review. Reviews with negative sentiments may bring out the risks associated with the purchase better than reviews with positive sentiments. Since in this study movies and electronics are compared, it is costlier to make a wrong decision on Search Goods than Experience Goods. Therefore, it is hypothesized that:
 
--   negativity bias/ negative info is more diagnostic than positive/ literature etc./ mention that review extremity and review sentiment are different things.
-
-```{=html}
-<!-- -->
-```
--   
+*H5: There is a positive relationship between the Proportion of Negative Words and Perceived Helpfulness. This effect is stronger / weaker for Search/Experience goods.*\
+*H6: There is a negative relationship between the Proportion of Positive Words and Perceived Helpfulness for both product types.*
 
 Tobit Regression is selected as the method because of three reasons. First of all, dependent variable, perceived helpfulness, is defined in a continuous range from 0 to 1. The second reason as stated by Mudambi (2010) @mudambi2010 is the potential selection bias in the sample. Unfortunately, it is not possible to know how many people read a particular review. Neither BestBuy nor IMDB discloses this information. Because of this, being included in a sample could be correlated with independent variables. For instance, potentially more voted reviews could attract more readers or readers could be drawn to reviews which have certain ratings. Lastly, there are many studies from the literature that used Tobit Regression as their research method [@mudambi2010; @korfiatis2012; @huang2015; @choi2020; @ren2019].
 
 # Results
 
-You can find the results at Table \@ref(tab:Reg-Results)
+Tobit regression results are presented at Table \@ref(tab:Reg-Results) alongside with OLS results as a benchmark [@mudambi2010; @kuan2015; @choi2020].
+
+Hyphothesis 1 proposed a U-Shape for the relationship between Review Extremity and Perceived Helpfulness. For Search Goods this is true because the linear Rating Extremity coefficient (-0.061, p \< 0.01) has a negative sign and the quadratic Rating Extremity coefficient (0.036, p \< 0.001) has a positive sign. The presence of the significant linear interaction effect between Review Extremity and Review Length accentuates the linear Rating Extremity coefficient (-0.043, p \< 0.001). This means that as reviews get longer negative extreme reviews become more useful. For Experience Goods, on the other hand, both linear (0.026, p \< 0.001) and quadratic (0.006, p \< 0.001) Review Extremity terms are positive. A U-Shaped function can't be observed. However, the significant interaction effect between Review Length and Review Extremity (-0.015, p \< 0.001) suggests that for longer reviews the linear term turns to negative. This means that the function takes a U-Shape after a certain review length. It can also be observed that Search Goods have stronger coefficients than Experience Goods meaning the expected U-Shape is more prominent for Search Goods. Therefore, it can be said that for shorter reviews Hypothesis 1 is partially supported and for longer reviews it is fully supported.
+
+A positive linear relationship between the logarithm of Review Length and Perceived Helpfulness was proposed with Hypothesis 2. A strong relationship between Review Length and Perceived Helpfulness is observed (0.404, p \< 0.001) for Search Goods. This effect is moderated by Review Extremity since the interaction effect is significant with a negative sign (-0.043, p \< 0.001). As review rating increases the responsiveness of the Perceived Helpfulness to Review Length decreases. This means that for positive extreme reviews relatively shorter texts are more helpful. Logarithmic form also proves that words in a review shows diminishing returns to helpfulness. Experience Goods somewhat deviates from the results of Search Goods. There is a weak positive relationship between Review Length and Perceived Helpfulness (0.021, p \< 0.01). However, this positive relationship quickly turns to negative for higher ratings because of the presence of the interaction term between Review Length and Review Extremity (-0.015, p \< 0.001). For lower ratings Hypothesis 2 is fully supported but as the Review Extremity increases this support weakens.
+
+For both good types the interaction effects are significantly negative (-0.043, p \< 0.001 ; -0.015, p \< 0.001). This means that as Review Extremity increases longer reviews become less helpful, supporting the idea of people spending more time evaluating negative information because it takes more time to read a longer review. However, there are nuances too. For Search Goods, the effect of the Review Length is always positive whether or not Review Extremity is low or high. On the contrary, for Experience Goods, after some point of Review Extremity longer reviews become "unhelpful" because the sign of the Review Length turns to negative. In this case Hypothesis 3 is supported wholly for Search Goods and somewhat supported for Experience Goods.
+
+Hypothesis 4 is fully supported. Recent reviews seem to be more helpful for both good types (0.029, p \< 0.001 ; 0.038, p \< 0.001).
+
+The results for Negative Word Proportion is quite interesting because it shows different characteristics for different product types. As expected, for Search Goods, Negative Word Proportion has a significant positive coefficient (0.061, p \< 0.001). The presence of negative words indeed increases the perceived helpfulness. Contrary to this, there is a negative relationship between negative words and perceived helpfulness for Experience Goods (-0.021, p \< 0.001). Hypothesis 5 is only supported for Search Goods and not supported for Experience Goods.
+
+Positive Word Proportion is only significant for Search Goods (-0.056, p \< 0.001). The presence of positive words has a negative effect on perceived helpfulness just as expected. The coefficient for Experience Goods show the expected sign too but it is statistically insignificant (-0.007, p \> 0.5). With this result, Hypothesis 6 is again only supported for Search Goods and not supported for Experience Goods.
+
+The result of the only control variable should also be reported. It seems that total amount of votes that a review gets has a negative relationship (-0.157, p \< 0.001) with perceived helpfulness for Search Goods. The opposite is true for Experience Goods (0.123, p \< 0.001).
 
 ```{r}
 search_tobit <- tobit(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log10(Total_Vote) + log10(Word_Count) * Rating + log10(Freshness+1) + positive + negative,
