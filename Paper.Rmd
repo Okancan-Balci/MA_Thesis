@@ -30,7 +30,8 @@ options(scipen = 20)
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE,
                       fig.align = "center",
-                      fig.width = 7,
+                      fig.width = 8,
+                      fig.height = 4,
                       echo = FALSE)
 ```
 
@@ -54,8 +55,6 @@ This study uses secondary data. The reviews were collected from two websites. Na
 
 # Literature Review
 
--   mention moderating effects of product type for every variable
-
 The research on Online Customer Reviews could be considered to have two main branches. One branch is heavily marketing oriented and tries to understand the effects of OCR on sales [@ghose2011; @ögüt2012]. The other branch is concerned with rather behavioral or psychological outcomes and focuses on perceived helpfulness only. Of course, the boundary between these two branches are somewhat blurry and same independent variables were used to explain both helpfulness and sales. Furthermore, @topaloglu2019 found that helpfulness have a moderating effect on sales. Many other papers used perceived helpfulness to explain sales as well [@ghose2011; @lee2018]. Thus, these two branches are inter-connected with each other. This paper tries to understand behavioral aspect.
 
 Many independent variables and their relationship between perceived helpfulness were examined by researchers. Hong et al. (2017) @hong2017 groups these independent variables into two chunks. The first group is reviewer-related predictors. Variables within this group tries to understand the relationship between reviewer status and perceived helpfulness(reviewer expertise, number of past reviews etc.). [@sun2019; @ghose2011]. The second group tries to understand the review-related relationships such as review length, review extremity, discrete review emotion etc [@mudambi2010; @ghose2011; @ren2019; @eslami2018]. Ghose et al. (2011) @ghose2011 showed that review-related predictors have stronger prediction power than reviewer-related ones. The choice of the variables is of course heavily dependent on the data itself. In this paper, only review-related predictors were examined.
@@ -68,21 +67,23 @@ Review Age is an indicator of how long the time passed after a review published 
 
 The counts of negative or positive words out of total word count (the proportion of negative and positive words) were employed by a handful of studies [@baek2012; @kuan2015]. These metrics can measure the sentiment of the review itself. They are usually different than Review Extremity. In most cases Review Extremity and Review Sentiment (Valence) don't match @zhang2011. Both Baek et al. (2012) @baek2012 and Kuan et al. (2015) @kuan2015 discovered a positive relationship between the proportion of negative words and perceived helpfulness. The relationship between the proportion of positive words and perceived helpfulness was found to be negative @kuan2015.
 
+The classification of Experience and Search goods plays a moderating role in the literature [@mudambi2010; @sun2019; @baek2012; @lee2016]. Some of these studies showed that Review Length has a greater effects for search products than experience products [@mudambi2010; @baek2012; @lee2016]. These findings suggest that search goods can be evaluated in a more objective way than experience goods. The moderating effect of product type on Review Extremity, on the contrary, is disputable. Mudambi (2010) @mudambi2010 showed that moderate reviews are more helpful for experience products than search products. Baek (2012) @baek2012 and Lee (2016) @lee2016 had the opposite results which indicated that more extreme reviews (negative or positive) is more helpful more search goods than experience goods.
+
 # Theoretical Framework
 
 ## Search and Experience Goods Classification
 
--   extend this later and try to connect to the methodology
+-   could be extended later
 
 Nelson (1970) [@nelson1970] differentiated goods based on their search and experience attributes [@nelson1974economic; @nelson1974; @nelson1981]. Search Attributes are the qualities that can be assessed before purchase. On the contrary, Experience Attributes can only be assessed by using the product itself, in other words evaluation is only possible after purchase. A single good can have both search and experience attributes. Depending on its dominant attributes the good can be classified as Search or Experience. A product's Total Cost consists of both Search Cost and Product Cost. This Search Cost is higher for Experience Goods, in other words, information search is costlier for Experience Goods than Search Goods.
 
 To explain it in a more generalized way, let's also define what "search" is. Nelson (1970) [@nelson1970] defines search as "The most obvious procedure available to the consumer in obtaining information about price or quality is search". People will always prefer sampling or trial use given the fact that the cost of the sampling or trial is lower than the cost of the search. This is why search is costlier for Experience Goods. For instance, getting information about a car (test drive, guides on the web etc.) is less costly than actually buying it. Even though a car has experience attributes, with this logic it is considered as a search good @klein1998.
 
--   might explain why negative reviews arent that helpful for movies
+-   might explain that goods within the same group can show different characteristics
 
 ## Negativity Bias Theorem and Loss Aversion
 
--   needs to be connected to the method
+-   should be extended a little bit more
 
 Humans tend to care about losses more than same amount of gains. Losing 100\$ is psychologically much more impactful than finding 100\$. This behavior is best explained by "loss aversion" from Behavioral Economics. [@kahneman1979; @schindler2017]. Loss Aversion has a strong connection to Negativity Bias Theorem since negative cues might be used as an early warning against potential losses @herr1991.
 
@@ -94,15 +95,15 @@ Negativity Bias Theorem has four main aspects, namely, higher negative potency -
 
 The data was scraped with a custom web scraper which was constructed with Selenium Framework for Pyhton 3 @python3. The scraper got the customer reviews from IMDB and BestBuy. The former is the biggest platform for Movies and TV Shows, the latter is one of the biggest electronic retailers in United States of America. Both websites host a great amount of online reviews. After the data was collected it was further transformed and analyzed with the help of R Programming Language [@RCore; @Tidyverse; @Tidytext].
 
-Online Customer Reviews from IMDB were collected as an experience goods data since movies can be considered as pure-experience goods and their search attributes are very limited. It is nearly impossible to evaluate a movie before watching it. Furthermore, evaluations for a movie can both have subjective (personal attachment to the protagonist, atmosphere of the movie etc.) and objective perspectives (writing, production quality etc.). There are also numerous studies that analyzed movies as experience goods[@nelson1970] ; @liu2014; @ghose2006; @baek2012; @lee2016].
+Online Customer Reviews from IMDB were collected as an experience goods data since movies can be considered as pure-experience goods and their search attributes are very limited. It is nearly impossible to evaluate a movie before watching it. Furthermore, evaluations for a movie can both have subjective (personal attachment to the protagonist, atmosphere of the movie etc.) and objective aspects (writing, production quality etc.). There are also numerous studies that analyzed movies as experience goods[@nelson1970; @liu2014; @ghose2006; @baek2012; @lee2016].
 
-BestBuy is a very big electronics retailer and because of this the website offers a sizable number of OCR for search goods. Contrary to experience goods, search goods usually have more objectively quantifiable traits. For example, resolution or screen size of a TV, RAM or GPU of a Laptop, storage or battery lifetime of a Smart Phone. Additionally, in the literature, TVs, Laptops and Phones were used as search goods [@mudambi2010; @sun2019; @baek2012; @ren2019]. Therefore, we collected search goods data from BestBuy.
+BestBuy is a very big electronics retailer and because of this the website offers a sizable number of OCR for search goods. Contrary to experience goods, search goods usually have more objectively quantifiable traits. For example, resolution or screen size of a TV, RAM or GPU of a Laptop, storage or battery lifetime of a Smart Phone. Additionally, in the literature, TVs, Laptops and Phones were used as search goods [@mudambi2010; @sun2019; @baek2012; @ren2019]. Therefore, search goods data was collected from BestBuy.
 
 -   mention that channels can change the way we perceive search and experience goods.
 
-From IMDB reviews of 22 movies were collected as experience goods. In total 22 movies account for 31,863 reviews. From BestBuy, total of 383,357 reviews were collected as search goods. Specifically, 201,113 reviews for TVs, 130,270 for Laptops and 51,974 for Phones. However, in the data there are many reviews that were never voted. To make sure that we are analyzing reviews that were actually read by people, we set a threshold for Total Reviews as five. In other words, we removed reviews that have less than 5 Total Votes [@choi2020; @baek2012]. At the very end, we were left with 15,024 observations for experience goods and 8,042 observations for search goods. It should be noted that `r round(15024 / 31863, digits = 2) * 100` percent of the reviews had total votes of 5 or greater for experience goods, whereas only `r round(8042 / 383357, digits = 2)* 100` percent of the search goods were voted at least 5 times.
+From IMDB reviews of 22 movies were collected as experience goods. In total 22 movies account for 31,863 reviews. From BestBuy, total of 383,357 reviews were collected as search goods. Specifically, 201,113 reviews for TVs, 130,270 for Laptops and 51,974 for Phones. However, in the data there are many reviews that were never voted. To make sure that I am analyzing reviews that were actually read by people, I set a threshold for Total Reviews as five. In other words, reviews that had less than 5 Total Votes were removed from the analysis data[@choi2020; @baek2012]. At the very end, the analysis data was consisted of 15,024 observations for experience goods and 8,042 observations for search goods. It should be noted that `r round(15024 / 31863, digits = 2) * 100` percent of the reviews had total votes of 5 or greater for experience goods, whereas only `r round(8042 / 383357, digits = 2)* 100` percent of the search goods were voted at least 5 times. Most of the search product reviews aren't getting voted and even maybe they aren't getting read at all. This might support the idea that people form more homogeneous opinions about search goods @hong2014. Once a helpful review is written most of the other reviews become redundant since other reviews most likely conveys similar information. On the contrary, more attendance to reviews can be observed for experience goods (movies) since nearly half of them were voted at least five times. This might be because people form heterogeneous opinions about experience goods @hong2014.
 
-It should be noted that in IMDB data there were cases (20 observations to be exact) where the same reviews were written by different user names. All duplicates along with original reviews were removed because the reviews had different helpfulness ratios.
+As a data cleaning note, in IMDB data there were cases (20 observations to be exact) where the same reviews were written by different user names. All duplicates along with original reviews were removed because the reviews had different helpfulness ratios.
 
 ## Exploratory Data Analysis
 
@@ -296,7 +297,9 @@ search_goods <- search_goods %>%
 
 In this section both dependent and independent variables are going to be introduced. The goal of this section is not "confirmatory" whatsoever. As a researcher, I believe sharing the data that I used in the study transparently increases the research's reproducibility value.
 
-As an outline, firstly the dependent variable is going to be introduced in a univariate manner and then independent variables are going to come into the picture both in univariate and bivariate way.
+In this section there will be univariate visualizations of all variables and bivariate visualizations of independent variables against the dependent variable.
+
+-   elaborate more on the importance of EDA here
 
 ### Dependent Variable
 
@@ -326,9 +329,7 @@ movies_data %>%
   labs(y = NULL)
 ```
 
-Hong et al. (2014) [@hong2014; @sun2019] states that consumers likely to form homogeneous opinions about search goods. On the contrary, the same paper suggests that consumers' opinions are more heterogeneous on experience goods. Intuitively, what these histograms show is the same. For instance, positive or negative attributes of search goods can be expressed in a limited number of ways. The storage space of a phone might be small or CPU of a laptop might not be fast as expected. Thus, one good review is be enough to reveal the quality of a product. I think this is why we see such a big spike at 100% on Figure \@ref(fig:IV-Hist-Search). In the movies (experience good) case on Figure \@ref(fig:IV-Hist-Exp), we see that readers usually disagree with each other because the distribution of the perceived helpfulness distributed around 50%. This is because evaluation process of movies is rather subjective. One person might not like Spider-Man: Homecoming and another would love it.
-
--   you can elaborate a little bit more about how movies cant be evaluated objectively
+Hong et al. (2014) [@hong2014; @sun2019] states that consumers likely to form homogeneous opinions about search goods. On the contrary, the same paper suggests that consumers' opinions are more heterogeneous on experience goods. Intuitively, what these histograms show is the same. For instance, positive or negative attributes of search goods can be expressed in a limited number of ways. The storage space of a phone might be small or CPU of a laptop might not be fast as expected. Thus, one good review is enough to reveal the quality of a product. I think this is why we see such a big spike at 100% on Figure \@ref(fig:IV-Hist-Search). In the movies (experience good) case on Figure \@ref(fig:IV-Hist-Exp), we see that readers usually disagree with each other because the distribution of the perceived helpfulness distributed around 50%. This might be because evaluation process of movies is rather subjective. One person might not like Spider-Man: Homecoming and another would love it. This might depend on how a person idealizes the Spider-Man or Peter Parker image in her mind which is completely subjective.
 
 ### Independent Variables
 
@@ -342,11 +343,11 @@ Because the data was taken from two different websites (BestBuy and IMDB), there
 
 On Figure \@ref(fig:Search-Rating) (B) and Figure \@ref(fig:Experience-Rating) (B) the bivariate relationship between perceived helpfulness and review extremity can be seen. Again, as a researcher, I must emphasize that this analysis is not confirmatory. On figures, we can observe "U" type of relationship for both Search and Experience goods, though the non-linearity seems to be stronger with Search goods. This might suggest that on the average extreme reviews might be more helpful than moderate reviews [@mudambi2010; @cao2011; @liu2014; @wang2018; @ghose2006]. On the other hand, it is observable that positive reviews on the average are more helpful than the rest. This might indicate that there is a linear positive relationship [@pan2011; @schindler2012; @korfiatis2012; @lee2016; @choi2020].
 
-```{r Search-Rating, fig.cap="The Distribution(A) and the Scatter Plot(B) of Review Rating for Search Goods.", fig.height=7}
+```{r Search-Rating, fig.cap="The Distribution(A) and the Scatter Plot(B) of Review Rating for Search Goods."}
 p1 <- search_goods %>% 
   ggplot(aes(Rating))+
   geom_bar(fill = "steelblue")+
-  labs(y = "Count", x = NULL)
+  labs(y = "Count", x = "Review Rating")
 
 p2 <- search_goods %>% 
   ggplot(aes(Rating, Helpfulness))+
@@ -354,17 +355,17 @@ p2 <- search_goods %>%
   geom_smooth(method = "loess", color = "steelblue")+
   labs(x = "Review Rating")
 
-plots <-  p1 / p2
+plots <-  p1 + p2
 
 plots + plot_annotation(tag_levels = "A")
 ```
 
-```{r Experience-Rating, fig.cap="The Distribution(A) and the Scatter Plot(B) of Review Rating for Experience Goods.", fig.height=7}
+```{r Experience-Rating, fig.cap="The Distribution(A) and the Scatter Plot(B) of Review Rating for Experience Goods."}
 p1 <- movies_data %>% 
   ggplot(aes(Rating))+
   geom_bar(fill = "steelblue")+
   scale_x_continuous(n.breaks = 10)+
-  labs(y = "Count", x = NULL)
+  labs(y = "Count", x = "Review Rating")
 
 p2 <- movies_data %>% 
   ggplot(aes(Rating, Helpfulness))+
@@ -373,7 +374,7 @@ p2 <- movies_data %>%
   scale_x_continuous(n.breaks = 10)+
   labs(x = "Review Rating")
 
-plots <-  p1 / p2
+plots <-  p1 + p2
 
 plots + plot_annotation(tag_levels = "A")
 ```
@@ -384,13 +385,9 @@ Review Length is the number of the words in a given review.
 
 The exponential distribution of the number of words can be observed for both good types on Figure \@ref(fig:Search-Length) (A) and Figure \@ref(fig:Experience-Length) (A). This means that reviews become less prevalent as they get longer. This might suggest logarithmic transformation which can increase the model fit. For the transformed distributions see Figure \@ref(fig:Search-Length) (B) and Figure \@ref(fig:Experience-Length) (B).
 
--   you might add confidence interval for mean on plots.
-
 The bivariate relationship between the number of words and Helpfulness seems to be varying for different product types. For Search goods on Figure \@ref(fig:Search-Length) (C) there is a clear positive relationship [@mudambi2010; @hong2017; @liu2014; @wang2018; @korfiatis2012; @lee2016; @lee2014; @choi2020]. However, this positive relationship appears to stop at a threshold[@schindler2012; @huang2015; @baek2012; @kuan2015; @eslami2018]. With this in mind, logarithmic transformation might make more sense (see Figure \@ref(fig:Search-Length) (D)) for modelling purposes. For Experience goods, on the other hand, there seems to be a weak negative relationship or no relationship at all (see Figure \@ref(fig:Experience-Length) (C) and (D)).
 
--   maybe add more framework for experience goods and no relationship
-
-```{r Search-Length, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Length for Search Goods and respective logarithmic transformations (B), (D)"}
+```{r Search-Length, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Length for Search Goods and respective logarithmic transformations (B), (D)"}
 p1 <- search_goods %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -417,14 +414,14 @@ p2_log <- search_goods %>%
   scale_x_log10(n.breaks = 8)+
   labs(x = "log10(Number of the Words)")
 
-plots <-  p1 / p1_log / p2 / p2_log
+plots <-  (p1 + p1_log) / (p2 + p2_log)
 
 plots + plot_annotation(
   tag_levels = "A"
 )
 ```
 
-```{r Experience-Length, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Length for Experience Goods and respective logarithmic transformations (B), (D)"}
+```{r Experience-Length, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Length for Experience Goods and respective logarithmic transformations (B), (D)"}
 p1 <- movies_data %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -451,7 +448,7 @@ p2_log <- movies_data %>%
   scale_x_log10(n.breaks = 8)+
   labs(x = "log10(Number of the Words)")
 
-plots <-  p1 / p1_log / p2 / p2_log
+plots <-  (p1 + p1_log) / (p2 + p2_log)
 
 plots + plot_annotation(
   tag_levels = "A"
@@ -462,7 +459,7 @@ plots + plot_annotation(
 
 Review Freshness indicates how recent a review is. To engineer this variable following steps were taken:
 
-1.  The first review date for a particular brand and model of a product (movie, phone, laptop, tv) was taken.
+1.  The first review date for a particular brand and model of a product (Movie, Phone, Laptop, TV) was taken.
 2.  The first dates for particular products then subtracted from other reviews' dates under the respective brand and model resulting an integer variable representing days.
 3.  Bigger numbers represent more recent reviews.
 
@@ -470,7 +467,7 @@ Distributions of both product types resemble exponential distribution (see Figur
 
 On the scatter plots a weak relationship between perceived helpfulness and review freshness could be observed. The smoother line suggests both positive [@lee2014; @choi2020; @wu2021] and negative [@liu2014; @li2019; @zhou2019] linear relationship between two variables. This non-linearity may explain different findings in the literature.
 
-```{r Search-Freshness, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Freshness for Search Goods and respective logarithmic transformations (B), (D)"}
+```{r Search-Freshness, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Freshness for Search Goods and respective logarithmic transformations (B), (D)"}
 p1 <- search_goods %>% 
   ggplot(aes(Freshness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -497,7 +494,7 @@ p2_log <- search_goods %>%
   scale_x_log10(n.breaks = 8)+
   labs(x = "log10(Freshness of Review + 1)")
 
-plots <- p1 / p1_log / p2 / p2_log
+plots <- (p1 + p1_log) / (p2 + p2_log)
 
 plots + plot_annotation(
   tag_levels = "A"
@@ -505,7 +502,7 @@ plots + plot_annotation(
 
 ```
 
-```{r Experience-Freshness, fig.height=8, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Freshness for Experience Goods and respective logarithmic transformations (B), (D)"}
+```{r Experience-Freshness, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Review Freshness for Experience Goods and respective logarithmic transformations (B), (D)"}
 p1 <- movies_data %>% 
   ggplot(aes(Freshness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -532,7 +529,7 @@ p2_log <- movies_data %>%
   scale_x_log10(n.breaks = 8)+
   labs(x = "log10(Freshness of Review + 1)")
 
-plots <- p1 / p1_log / p2 / p2_log
+plots <- (p1 + p1_log) / (p2 + p2_log)
 
 plots + plot_annotation(
   tag_levels = "A"
@@ -542,10 +539,12 @@ plots + plot_annotation(
 
 #### Proportion of Negative Words
 
-Negative words were derived by using NRC Word-Emotion Association Lexicon @Mohammad13. A lexicon is basically a dictionary of words. These words might have similar emotions or sentiments. In this case, negative words lexicon was used in order to engineer this variable.
+Negative words were derived by using NRC Word-Emotion Association Lexicon @Mohammad13. A lexicon is basically a dictionary of words. These words might have similar emotions or sentiments. In this case, negative words lexicon was used in order to engineer this variable. A sample of negative words from the lexicon can be observed below.
+
+*"caricature, superstition, compost, misconception, grief, violation, scrub, omen, erratic, porcupine"*
 
 $$
-Negative\ Word \% = \frac{Number\ of\ Matched\ Negative\ Word}{Total\ Words\ in\ Review} 
+Negative\ Word \% = \frac{Number\ of\ Matched\ Negative\ Word}{Total\ Words\ in\ the\ Review} 
 $$
 
 These steps were taken in order to create this variable:
@@ -553,20 +552,18 @@ These steps were taken in order to create this variable:
 1.  Words in a review were tokenized.
 2.  Tokenized words were matched with the words in the lexicon.
 3.  Matches were counted and divided by the total number of words with the respective review then multiplied by 100 in order to make regression results more interpretable.
-4.  Logarithmic transformation was applied in order to scale the variable in a better way.
+4.  Logarithmic transformation was applied in order to scale the variable in a more normalized way.
 
 On Figure \@ref(fig:Search-Neg) (A) and Figure \@ref(fig:Experience-Neg) (A) the distributions of the variable for both good types can be seen. On plots, x-axis labels were given in the logarithm of base 10 so 1.00 on the x-axis implies that 10% of the review was negative words. It should be noted that `r round(mean(search_goods$negative == 0), digits = 2)` percent of the reviews for search goods don't have any negative words in them. For experience goods this number is `r round(mean(movies_data$negative == 0), digits = 2)` percent.
 
-On Figure \@ref(fig:Search-Neg) (B), non-linear relationship between perceived helpfulness and the proportion of negative words can be observed search goods. It should be kept in mind that as the proportion increases the sample size decreases. This might mean that any statistical test for non-linearity would have low power. On the other hand, somewhat weak negative linear relationship between perceived helpfulness and proportion of negative words can be seen for experience goods on Figure \@ref(fig:Experience-Neg) (B).
+On Figure \@ref(fig:Search-Neg) (B), non-linear relationship between perceived helpfulness and the proportion of negative words can be observed for search goods. This might suggest that too much negative information might fall into slander rather than informing the customer about the potential risks of the product. On the other hand, somewhat weak negative linear relationship between perceived helpfulness and proportion of negative words can be seen for experience goods on Figure \@ref(fig:Experience-Neg) (B).
 
--   need citation here!
-
-```{r Search-Neg, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Search Goods"}
+```{r Search-Neg, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Search Goods"}
 p1 <- search_goods %>% 
   ggplot(aes(negative))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
   scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = NULL)
+  labs(y = "Count", x = "Log10(Proportion of Negative Words)")
 
 p2 <- search_goods %>% 
   ggplot(aes(negative, Helpfulness))+
@@ -575,19 +572,19 @@ p2 <- search_goods %>%
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
 
-plots <- p1 / p2
+plots <- p1 + p2
 
 plots + plot_annotation(
   tag_levels = "A"
 )
 ```
 
-```{r Experience-Neg, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Experience Goods"}
+```{r Experience-Neg, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Experience Goods"}
 p1 <- movies_data %>% 
   ggplot(aes(negative))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
   scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = NULL)
+  labs(y = "Count", x = "Log10(Proportion of Negative Words)")
 
 p2 <- movies_data %>% 
   ggplot(aes(negative, Helpfulness))+
@@ -596,7 +593,7 @@ p2 <- movies_data %>%
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
 
-plots <- p1 / p2
+plots <- p1 + p2
 
 plots + plot_annotation(
   tag_levels = "A"
@@ -605,13 +602,19 @@ plots + plot_annotation(
 
 #### Proportion of Positive Words
 
+$$
+Positive\ Word \% = \frac{Number\ of\ Matched\ Positive\ Word}{Total\ Words\ in\ the\ Review} 
+$$
+
 This variable was engineered in the same manner with its negative words counterpart. In this case, however, reviews of both good types have more positive words in them proportionally when compared to negative words. `r round(mean(search_goods$positive == 0), digits = 2)` percent of the reviews of search goods don't have any positive words in them and this number is only `r round(mean(movies_data$positive == 0), digits = 2)` for experience goods. Except for zero values both distributions are looking quite normal (see Figure \@ref(fig:Search-Pos) (A) and Figure \@ref(fig:Experience-Pos) (A)).
+
+*A sample of positive words from EmoLex:*
+
+*"covenant, jovial, score, foundation, affirmation, reliable, mending, garden, luxurious, wit"*
 
 On scatter plots (see Figure \@ref(fig:Search-Pos) (B) and Figure \@ref(fig:Experience-Pos) (B)), relationships between perceived helpfulness and proportion of positive words are looking very similar to their negative counterparts. Furthermore, these plots kind of similar to perceived helpfulness versus number of words plots (see Figure \@ref(fig:Search-Length) (B) and Figure \@ref(fig:Experience-Length) (B)). In a sense, both negative and positive proportions imply number of words. As the proportion increases so does the number of words. That's why aforementioned figures show similar relationships between variables. On higher dimensions these relationships might be different. That is why Exploratory Data Analysis should never be conducted in a confirmatory sense.
 
--   needs sth from literature here as well
-
-```{r Search-Pos, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Search Goods"}
+```{r Search-Pos, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Search Goods"}
 p1 <- search_goods %>% 
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -625,14 +628,14 @@ p2 <- search_goods %>%
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
 
-plots <- p1 / p2
+plots <- p1 + p2
 
 plots + plot_annotation(
   tag_levels = "A"
 )
 ```
 
-```{r Experience-Pos, fig.height=7, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Experience Goods"}
+```{r Experience-Pos, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Experience Goods"}
 p1 <- movies_data %>% 
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -646,7 +649,7 @@ p2 <- movies_data %>%
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
 
-plots <- p1 / p2
+plots <- p1 + p2
 
 plots + plot_annotation(
   tag_levels = "A"
@@ -767,5 +770,40 @@ stargazer(list("Search Tobit" = search_tobit,
 ```
 
 # Discussion and Conclusion
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\
+--- --- --- ---
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+--- --- --- ---
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+\*\*WORK IN PROGRESS\*\*
+
+--- --- --- ---
 
 # References
