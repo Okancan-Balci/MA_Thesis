@@ -68,6 +68,8 @@ The classification of Experience and Search goods plays a moderating role in the
 
 Many different types of research methodologies were employed in the literature of the Review Helpfulness. To my knowledge the most common empirical analysis method that was used in the literature was Tobit Regression because of the limited and censored nature of the Reviews Helpfulness [@mudambi2010; @korfiatis2012; @huang2015; @choi2020; @ren2019; @chua2014]. Some of these studies also shared Ordinary Least Squares results alongside with the Tobit Regression results for the purpose of benchmarking [@mudambi2010; @kuan2015; @choi2020]. Ordinary Least Squares were also used as a main empirical methodology in some papers [@liu2014; @ghose2006; @lee2016]. Furthermore, Ordinary Least Squares was employed in a hierarchical manner as well [@baek2012]. Some other studies employed Multi-Level Regression models in order to deal with potential biases [@ghose2011; @wu2021; @kuan2015]. In a rare case Ordinal Logistic Regression was one of the methods that was used to explain the determinants of the review helpfulness [@cao2011]. Predictive methods such as Neural Networks were used to understand the components of a helpful review as well [@lee2014]. One paper attacked the problem of the review helpfulness with three methods, namely, Partial Least Squares - Structural Equation Modelling, ANOVA Analysis and Artificial Neural Networks [@eslami2018].
 
+Any website which offers online reviews for products were used as a data source (Yelp, Booking, BestBuy, eBay) in the literature of review helpfulness but the majority of the aforementioned studies used the data from either websites Amazon or Internet Movie Database (IMDB) because these websites offer relatively easier ways to get the needed data. They have their respective APIs and on top of that, it is relatively easier to scrape both websites. Additionally, both websites offer product reviews for a numerous different types of products. Amazon is a huge e-retailer and offers a wide range of items. IMDB is a home for both critic and user reviews of Movies and TV Shows. In some other studies local equivalents of Amazon was used as well. [@sun2019]. @cao2011 used data from CNET Download.com which is a software distributor.
+
 # Theoretical Framework
 
 ## Search and Experience Goods Classification
@@ -112,7 +114,6 @@ As a data cleaning note, in IMDB data there were cases (20 observations to be ex
 ## Read the Data
 
 files <- dir()
-
 files <- files[str_detect(files, "movie_.+")]
 
 movies_data <- map_dfr(files, read_csv, show_col_types = FALSE)
@@ -130,12 +131,13 @@ movies_data <- movies_data %>%
   mutate(Helpfulness = Helpful_Vote / Total_Vote) %>% 
   mutate(Rating = Rating/2)
 
-## Removing All the Duplicated Reviews including the original since same reviews were written by differend user names
+## Removing All the Duplicated Reviews including the originals since same reviews were written by differend user names
 movies_data <- movies_data %>% 
   mutate(Rev_dup = duplicated(Review) | duplicated(Review, fromLast = TRUE)) %>% 
   filter(Rev_dup == 0)
 
-## Words
+# Words
+## Creating Review ID
 movies_data <- movies_data %>% 
   mutate(Doc_ID = row_number())
 
@@ -203,7 +205,9 @@ phones_data <- phones_data %>%
 ## Laptop Data
 files <- dir()
 files <- files[str_detect(dir(), "all_laptop_reviews.+")]
+
 laptop_data <- map_dfr(files, read_csv, show_col_types = FALSE)
+
 ### Removing replicates that I couldn't detect earlier
 laptop_data <- laptop_data %>% 
   filter(!Product_Name %in% c(
@@ -236,7 +240,7 @@ search_goods <- search_goods %>%
   filter(Dupped == 0)
 
 ## Word Counts
-
+### Creating Review IDs
 search_goods <- search_goods %>% 
   mutate(Doc_ID = row_number()) 
 
@@ -279,7 +283,6 @@ search_goods <- search_goods %>%
 
 
 ## Freshness (Timeline)
-
 search_goods <- search_goods %>% 
   mutate(Date = as_date(mdy_hm(Date, locale = "english")))
 
@@ -540,7 +543,7 @@ plots + plot_annotation(
 
 Negative words were derived by using NRC Word-Emotion Association Lexicon [@Mohammad13]. A lexicon is basically a dictionary of words. These words might have similar emotions or sentiments. In this case, negative words lexicon was used in order to engineer this variable. A sample of negative words from the lexicon can be observed below.
 
-*"caricature, superstition, compost, misconception, grief, violation, scrub, omen, erratic, porcupine"*
+> *"caricature, superstition, compost, misconception, grief, violation, scrub, omen, erratic, porcupine"*
 
 $$
 Negative\ Word \% = \frac{Number\ of\ Matched\ Negative\ Word}{Total\ Words\ in\ the\ Review} 
@@ -609,7 +612,7 @@ This variable was engineered in the same manner with its negative words counterp
 
 *A sample of positive words from EmoLex:*
 
-*"covenant, jovial, score, foundation, affirmation, reliable, mending, garden, luxurious, wit"*
+> *"covenant, jovial, score, foundation, affirmation, reliable, mending, garden, luxurious, wit"*
 
 On scatter plots (see Figure \@ref(fig:Search-Pos) (B) and Figure \@ref(fig:Experience-Pos) (B)), relationships between perceived helpfulness and proportion of positive words are looking very similar to their negative counterparts. Furthermore, these plots kind of similar to perceived helpfulness versus number of words plots (see Figure \@ref(fig:Search-Length) (B) and Figure \@ref(fig:Experience-Length) (B)). In a sense, both negative and positive proportions imply number of words. As the proportion increases so does the number of words. That's why aforementioned figures show similar relationships between variables. On higher dimensions these relationships might be different. That is why Exploratory Data Analysis should never be conducted in a confirmatory sense.
 
@@ -700,32 +703,45 @@ p2 <- movies_data %>%
   plot_layout(guides = "collect")
 ```
 
-## Hypothesis Development and Method
+## Hypothesis Development
 
 @korfiatis2012 found that neutral rated reviews (3 out of 5 stars) imply indifference to readers. This means that prior information of the potential buyer can't be influenced by these neutral reviews and likely to be found less helpful compared to extreme reviews (1 or 5 stars) [@wang2018; @liu2014; @cao2011; @ghose2006]. As the reviews get more extremely rated they might strengthen or sway prior information that a potential consumer has, making them more helpful. This extremeness has more objective nature for Search Goods since there are fewer ways to express pleasantness or unpleasantness for a particular product. For instance a bad design in a laptop might cause fans to make much more noise than they should normally do. This information along with a very low rating may signal there are some inherent problems with that particular product, making the feedback more helpful. On the other hand, for Experience Goods and in this specific case movies, opinions for a given product might be much more subjective. For example, a reviewer might find a movie "childish" and give it one star, the other might find the movie "light-hearted and colorful" and give 5 stars, making the helpfulness subjective and decreasing its usefulness. Furthermore, for experience goods, it was found that opposite extremes to a potential buyer's prior expectations aren't impactful on the decision making process [@hoch1989]. In other words, prior expectations play a bigger role in decision making process for experience goods. Therefore it is hypothesized that:
 
-*H1: There is a U-Shaped relationship between Perceived Helpfulness and Review Rating. This U-Shape is stronger/weaker for Search/Experience Goods.*
+***H1**: There is a U-Shaped relationship between Perceived Helpfulness and Review Rating. This U-Shape is stronger/weaker for Search/Experience Goods.*
 
 In order to decrease the uncertainty, search costs must be reduced. In \@ref(search-and-experience-goods-classification) it was mentioned that the action of search was costlier for Experience Goods than Search Goods. Furthermore, people tend to have homogeneous opinions about Search Goods [@hong2014]. This might mean that information cues are much more uniform for Search Goods. [@huang2015; @baek2012]. In other words, there are limited ways to construct a review because search attributes are more objective. Therefore, there might be a positive linear relationship between Perceived Helpfulness and Review Length. However, since the attributes of electronics are objectively identifiable and limited (storage space of a phone, RAM of a laptop, color depth of a TV etc.) there aren't much to review for a reviewer. Because of this, there might be diminishing marginal returns to Review Length [@schindler2012; @huang2015]. On the contrary, for Experience Goods, people have tendency to form heterogeneous opinions [@hong2014]. This means that movie reviews are much more subjective by nature. Since there are less objectivity, a helpful review to one person might not be helpful to another. However, since there are other ways to objectively evaluate a movie, a weaker positive linear relationship is expected. Therefore it is hypothesized that:
 
-*H2: There is a positive relationship between logarithm of Review Length and Perceived Helpfulness. This effect is stronger for Search Goods than Experience Goods*.
+***H2**: There is a positive relationship between logarithm of Review Length and Perceived Helpfulness. This effect is stronger for Search Goods than Experience Goods*.
 
 As it was mentioned in \@ref(negativity-bias-theorem-and-loss-aversion), people tend to try to minimize their losses. Because of this, negative cues draw more attention than positive ones since negative cues may imply potential losses. @guo2019 found out that people spent more time when evaluating negative reviews. This may suggest a linear interaction between Review Extremity and Review Length. Since people take more time to evaluate negative reviews, this may indicate that the effect of Review Length is stronger when Review Rating is low. And when a review is longer it is more helpful for negatively rated reviews than positively rated reviews. In this case, it is hypothesized that:
 
-*H3: There is a negative linear interaction effect between Review Rating and the logarithm of the Review Length for both Search and Experience Goods.*
+***H3**: There is a negative linear interaction effect between Review Rating and the logarithm of the Review Length for both Search and Experience Goods.*
 
 Potential buyers may find more recent reviews helpful because they may want to get updated information on a product. This might especially be true for products which are on the market for more than a year. For instance, a laptop which was produced in 2018 could be a good choice for that year but for year 2021 it is probable that its features and specifications would be below average. A similar behavior might be possible for movies as well. However, this time reviewers might need to take their time to digest and evaluate the movie. A review which is carefully constructed may be posted later making it more recent compared to a review which was hastily written. Furthermore, some popular movies which are considered as classics may attract reviews even way later than they were first released. Since some websites may employ algorithms that may push newer reviews to the top in order to be able to increase the interaction on their platforms, these kind of reviews may attract more helpful votes. Thus, it is hypothesized that:
 
-*H4: There is a positive relationship between Perceived Helpfulness and Freshness of a Review for both Search and Experience Goods.*
+***H4**: There is a positive relationship between Perceived Helpfulness and Freshness of a Review for both Search and Experience Goods.*
 
 So far it should be understood that people try to cut down their losses. That is why negative cues draw more attention than positive ones [@kahneman1979; @schindler2017]. Additionally, people find negative information more credible and persuasive than positive information [@ito1998; @Kanouse1984ExplainingNB]. It is known that Review Rating is the satisfaction level of a customer towards a product. However, Review Rating itself isn't enough to convey the information about how a customer expresses her satisfaction / dissatisfaction towards a product. The way a customer expresses her opinion on a product might have an effect on the perceived helpfulness of a review. Reviews with negative sentiments may bring out the risks associated with the purchase better than reviews with positive sentiments. Since in this study movies and electronics are compared, it is costlier to make a wrong decision on Search Goods than Experience Goods. Therefore, it is hypothesized that:
 
-*H5: There is a positive relationship between the Proportion of Negative Words and Perceived Helpfulness. This effect is stronger / weaker for Search/Experience goods.*
+***H5**: There is a positive relationship between the Proportion of Negative Words and Perceived Helpfulness. This effect is stronger / weaker for Search/Experience goods.*\
+***H6**: There is a negative relationship between the Proportion of Positive Words and Perceived Helpfulness for both product types.*
 
-\
-*H6: There is a negative relationship between the Proportion of Positive Words and Perceived Helpfulness for both product types.*
+## Research Methodology
 
-Tobit Regression is selected as the method because of three reasons. First of all, dependent variable, perceived helpfulness, is defined in a continuous range from 0 to 1. The second reason as stated by @mudambi2010 is the potential selection bias in the sample. Unfortunately, it is not possible to know how many people read a particular review. Neither BestBuy nor IMDB discloses this information. Because of this, being included in a sample could be correlated with independent variables. For instance, potentially more voted reviews could attract more readers or readers could be drawn to reviews which have certain ratings. Lastly, there are many studies from the literature that used Tobit Regression as their research method [@mudambi2010; @korfiatis2012; @huang2015; @choi2020; @ren2019].
+Tobit model is also named as Censored Regression model. Censored data arises when there exist lower (censored from below) or upper (censored from above) or both lower and upper boundaries for the dependent variable. This type of data is fairly prevalent in Economics. For instance, in consumer economics there is no such thing as "negative consumption" or in labor economics there is no such thing as "negative work hours". Furthermore, there might be cases where some really high values could be recorded as "50,000 or more" because of the data collection design. Ordinary Least Squares can't take account of the censored observations in the data because it extrapolates lower and upper ends when it fits the model and this leads biased estimations.
+
+Tobit regression approaches censored dependent variable problem from two angles. In a sense Tobit regression could be considered as the summation of Probit regression and Truncated regression. The probit side considers if a particular observation is above or below the given limit. If the observation, for example, is below the lower limit then it must be equal to the lower limit. If it is higher than the lower limit the problem turns to a normal regression. In this case, Perceived Helpfulness can be expressed such as this:
+
+$$
+y=
+\begin{cases}
+  0   & \text{if  $ \ y^* \le0$} \\
+  y^* & \text{if $ \ 0< y^* <1$} \\
+  1   & \text{if $ \ y^* \ge 1$}
+\end{cases}
+$$
+
+Tobit Regression is selected as the analysis method because of three reasons. First of all, the dependent variable, perceived helpfulness, is defined in a continuous range from 0 to 1 since perceived helpfulness is a percentage as mentioned above. The second reason as stated by @mudambi2010 is the potential selection bias in the sample. Unfortunately, it is not possible to know how many people read a particular review. Neither BestBuy nor IMDB disclose this information. Because of this, being included in a sample could be correlated with independent variables. For instance, potentially more voted reviews could attract more readers or readers could be drawn to reviews which have certain ratings. Lastly, there are many studies from the literature that used Tobit Regression as their research method [@mudambi2010; @korfiatis2012; @huang2015; @choi2020; @ren2019].
 
 # Results
 
@@ -789,32 +805,5 @@ stargazer(list("Search Tobit" = search_tobit,
 \*\*WORK IN PROGRESS\*\*
 
 \*\*WORK IN PROGRESS\*\*
-
-\
---- --- --- ---
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-------------------------------------------------------------------------
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-\*\*WORK IN PROGRESS\*\*
-
-------------------------------------------------------------------------
 
 # References
