@@ -76,9 +76,15 @@ There might be variety reasons why there are some conflicting results in the lit
 
 ## Search and Experience Goods Classification
 
--   could be extended later
+-   I am extending it atm
 
-@nelson1970 differentiated goods based on their search and experience attributes [@nelson1974economic; @nelson1974; @nelson1981]. Search Attributes are the qualities that can be assessed before purchase. On the contrary, Experience Attributes can only be assessed by using the product itself, in other words evaluation is only possible after purchase. A single good can have both search and experience attributes. Depending on its dominant attributes the good can be classified as Search or Experience. A product's Total Cost consists of both Search Cost and Product Cost. This Search Cost is higher for Experience Goods, in other words, information search is costlier for Experience Goods than Search Goods.
+Relaxing the assumption that consumers have perfect information about the products on the market raises the problem of information acquisition for consumers. Getting the complete information about products is important because economic agents want to maximize their utility by finding the best good on the market. The complete information is the information about both the prices and quality levels of the goods which are available on the market. Acquiring the information of the quality of a product is harder than getting the information about its price. To explain, a consumer can check the price list of laptops and have an idea about maximum and minimum prices but getting the information about a laptop's technical components or a brand's support for its products is a lot more effort taking and costly.
+
+In order to solve this problem @nelson1970 differentiated goods based on their search and experience attributes [@nelson1974economic; @nelson1974; @nelson1981]. Search Attributes are the qualities that can be assessed before purchase. On the contrary, Experience Attributes can only be assessed by using the product itself, in other words, evaluation is only possible after purchase. A single good can have both search and experience attributes. Depending on its dominant attributes the good can be classified as Search or Experience. @darby1973 extended Search and Experience goods framework with Credence goods where consumers can't evaluate the good even after consumption.
+
+-   you were about to define what search is and when it is not effective
+
+A product's Total Cost consists of both Search Cost and Product Cost. This Search Cost is higher for Experience Goods, in other words, information search is costlier for Experience Goods than Search Goods.
 
 To explain it in a more generalized way, let's also define what "search" is. @nelson1970 defines search as "The most obvious procedure available to the consumer in obtaining information about price or quality is search". People will always prefer sampling or trial use given the fact that the cost of the sampling or trial is lower than the cost of the search. This is why search is costlier for Experience Goods. For instance, getting information about a car (test drive, guides on the web etc.) is less costly than actually buying it. Even though a car has experience attributes, with this logic it is considered as a search good [@klein1998].
 
@@ -93,6 +99,8 @@ Humans tend to care about losses more than same amount of gains. Losing 100\$ is
 Negativity Bias Theorem has four main aspects, namely, higher negative potency -- Negative signals have more impact on people than the positive ones. --, steeper negative gradients -- Negativity of negatives events grows faster in space and time than positive ones. --, higher negative dominance -- A combination of equally negative and positive cues results in more negative impressions. --, and various negative differentiations -- Negative cues produce more diverse individual responses than positive ones. --[@rozin2001; @sen2007; @eslami2018].
 
 ## Some other theory
+
+## some other
 
 # The Data and Research Methodology
 
