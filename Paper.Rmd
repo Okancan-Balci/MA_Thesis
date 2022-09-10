@@ -88,15 +88,25 @@ Ultimately, to put the theory in a more generalized way, a product's Total Cost 
 
 ## Negativity Bias Theorem and Loss Aversion
 
--   should be extended a little bit more
+-   expand NBT a little bit more
+
+Negativity Bias Theorem argues that humans or even animals have tendencies to be more aware of negative entities than positive ones. Someone else's hair in one's meal has the potential of ruining the whole meal. On the contrary a plate of hair won't turn to a delicious meal just because there is a slice of a delicious pizza on top of the hair. @rozin2001 explains the Negativity Bias Theorem by describing it with four main aspects. Namely, Negative Potency, Steeper Negative Gradients, Negative Dominance and Negative differentiation [@rozin2001; @sen2007; @eslami2018].
+
+**Negative Potency** defends that the exact opposite of something positive carries heavier weight. In other words, negative events are much more impactful than their exact positive counterparts. For instance, losing 100\$ could have a harder psychological effect on a person than that particular person is gaining 100\$. Loss Aversion [@kahneman1979; @tversky1991] is the phenomenon where the Negative Potency can be observed the best. People risk more/less when they are losing/gaining something. The behavior can be explained by the Endowment Effect [@kahneman1990]. Endowment effect occurs because people usually over-estimate the value of their belongings, for example a pencil. However, they would have under-valued the same pencil if the item didn't belong to them. The reason to this behavior is that the dis-utility of losing that pencil is greater than the utility of acquring the same pencil.
+
+**Greater Steepness of Negative Gradients** simply implies that the marginal psychological effect of a negative entity is much more higher than a positive one. In other words, negative things cause more negativity as the time goes on.
+
+**Negativity Dominance** asserts that a balanced mixture of positive and negative evaluations creates a perception of negativity. This means that negative entities have higher weight than positive entities. This is apparent in religions. For most of the religions being a good and pious person takes time, demands upmost care. However, tainting this image is very easy with certain actions such as murder or pre-martial intercourse.
+
+**Greater Negative Differentiation** discusses the possibility that human cognition is fine-tuned to negative entities because being aware of negative stimuli might correlate with survival in the process of the evolution. As a consequence, the vocabulary that reflects and describes the state of negativeness is much more wider than its counterpart positiveness. [@peeters1971].
+
+-   talk about loss aversion in detail
+
+Prospect Theory (Loss Aversion) criticizes Expected Utility Theory by introducing the thought that Expected Utility Theory is insufficient explaining the decision making behavior of economic agents who are under risk. In Expected Utility Theory outcomes are weighted by their probabilities but Prospect Theory discusses that people give more weight to the outcomes that they know for sure will happen. This is called *certainty effect* [@kahneman1979].
 
 Humans tend to care about losses more than same amount of gains. Losing 100\$ is psychologically much more impactful than finding 100\$. This behavior is best explained in "loss aversion" from behavioral economics. [@kahneman1979; @schindler2017]. Loss Aversion has a strong connection to Negativity Bias Theorem since negative cues might be used as an early warning against potential losses [@herr1991].
 
-Negativity Bias Theorem has four main aspects, namely, higher negative potency -- Negative signals have more impact on people than the positive ones. --, steeper negative gradients -- Negativity of negatives events grows faster in space and time than positive ones. --, higher negative dominance -- A combination of equally negative and positive cues results in more negative impressions. --, and various negative differentiations -- Negative cues produce more diverse individual responses than positive ones. --[@rozin2001; @sen2007; @eslami2018].
-
 ## Some other theory
-
-## some other
 
 # The Data and Research Methodology
 
@@ -721,7 +731,7 @@ In order to decrease the uncertainty, search costs must be reduced. In \@ref(sea
 
 ***H2**: There is a positive relationship between logarithm of Review Length and Perceived Helpfulness. This effect is stronger for Search Goods than Experience Goods*.
 
-As it was mentioned in \@ref(negativity-bias-theorem-and-loss-aversion), people tend to try to minimize their losses. Because of this, negative cues draw more attention than positive ones since negative cues may imply potential losses. @guo2019 found out that people spent more time when evaluating negative reviews. This may suggest a linear interaction between Review Extremity and Review Length. Since people take more time to evaluate negative reviews, this may indicate that the effect of Review Length is stronger when Review Rating is low. And when a review is longer it is more helpful for negatively rated reviews than positively rated reviews. In this case, it is hypothesized that:
+As it was mentioned in \@ref(negativity-bias-theorem-and-loss-aversion), people tend to try to minimize their losses. Because of this, negative cues draw more attention than positive ones since negative cues may imply potential losses. @guo2019 found out that people spent more time when evaluating negative reviews. This may suggest a linear interaction between Review Extremity and Review Length. Since people take more time to evaluate negative reviews, this may indicate that the effect of Review Length is stronger when Review Rating is low. And when a review is longer it is evaluated as more helpful for negatively rated reviews than positively rated reviews. In this case, it is hypothesized that:
 
 ***H3**: There is a negative linear interaction effect between Review Rating and the logarithm of the Review Length for both Search and Experience Goods.*
 
