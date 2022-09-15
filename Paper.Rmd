@@ -311,11 +311,9 @@ search_goods <- search_goods %>%
   mutate(Freshness = as.integer(Date - First_Date))
 ```
 
-In this section both dependent and independent variables are going to be introduced. The goal of this section is not "confirmatory" whatsoever. As a researcher, I believe sharing the data that I used in the study transparently increases the research's reproducibility value.
+Exploratory Data Analysis(EDA) has no set of procedures to be followed. The way EDA is conducted almost always depends on the context of the research. @jebb2017 discusses that EDA encourages scientific replication if done properly. As a researcher, I believe the same notion that transparently sharing the data that I used in the study increases the research's reproducibility value. I also think that readers or fellow researchers might build a better intiution about the discussion and what goes into the model in this study.
 
-In this section there will be univariate visualizations of all variables and bivariate visualizations of independent variables against the dependent variable.
-
--   elaborate more on the importance of EDA here
+The goal of this section is not "confirmatory" whatsoever. Both dependent and independent variables are going to be introduced with an emphasis on their quantitative features such as their distributions and potential transformations which can be applied to the variables in question. In addition to this, bivariate relations between independent and dependent variables will be plotted in order to get an initial idea about the potential effects along with similar findings from the literature. Thus, in a sense, EDA in this section doesn't carry out the purpose of discovery, rather it merely puts the data on the spot for the sake of transparency.
 
 ### Dependent Variable
 
@@ -336,6 +334,8 @@ search_goods %>%
 ```
 
 As it can be seen the distribution is rather skewed. Looks like in the electronics case, readers find some reviews very helpful. In fact, in the data there is one review which had over 170 helpful votes with zero unhelpful votes. On the other hand, distribution for experience goods on Figure \@ref(fig:IV-Hist-Exp) presents a different picture. This time helpfulness ratio is sort of normally distributed. There aren't very helpful reviews. The most helpful review interval seems to be lying between 70% to 80%.
+
+On a small note, the way the dependent variable was distributed for search goods may raise some questions about whether the standard error will be calculated correctly or not in a regression method. @li2012 found out that given a relatively high sample size (\>3000) linear regression techniques produces sound estimates of coefficients. Since the sample size for search goods is over 8000 it might be assumed that the use of linear regression methods is acceptable.
 
 ```{r IV-Hist-Exp, fig.cap="Distribution of the Helpfulness of Experience Goods"}
 movies_data %>% 
