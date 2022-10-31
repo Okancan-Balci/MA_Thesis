@@ -13,7 +13,7 @@ output:
 geometry: left=40mm, right=20mm, top=30mm, bottom=30mm
 fontsize: 12pt
 papersize: A4
-linestretch: 1.25
+linestretch: 1.5
 fontfamily: times
 ---
 
@@ -43,7 +43,7 @@ knitr::opts_chunk$set(warning = FALSE,
 
 \newpage
 
-# Introduction
+# Introduction {-}
 
 Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Customer Reviews (OCR). Online Customer Reviews come in the form of electronic word-of-mouth [@dellarocas2003] and can be defined as "*peer-generated product evaluations posted on company or third party websites*" [@mudambi2010]. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011; @dellarocas2007].
 

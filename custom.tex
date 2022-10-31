@@ -1,6 +1,29 @@
 \usepackage{fancyhdr}
+\usepackage{titlesec}
 \pagestyle{fancy}
 \fancypagestyle{plain}{\pagestyle{fancy}}
 \fancyhf{} % clear all headers and footers
 \renewcommand{\headrulewidth}{0pt} % remove rule between header and text
 \fancyhead[R]{\thepage}
+\titleformat{\chapter}[display]
+  {\bfseries\large\rmfamily\filcenter}
+  {\MakeUppercase{\chaptertitlename} \thechapter}
+  {24pt}
+  {\MakeUppercase}
+\titleformat{\section}[block]
+  {\bfseries\rmfamily}
+  {\MakeUppercase \thesection}
+  {18pt}
+  {\MakeUppercase}
+\titlespacing{\section}{10mm}{10pt}{10pt}
+\titleformat{\subsection}[block]
+  {\bfseries\rmfamily}
+  {\thesubsection}
+  {1pc}
+  {}
+\titlespacing{\subsection}{10mm}{10pt}{10pt}
+\titleformat{\subsubsection}[block]
+  {\mdseries\rmfamily}
+  {\thesubsubsection}
+  {1pc}
+  {}
