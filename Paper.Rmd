@@ -1,13 +1,20 @@
 ---
+documentclass: report
 title: 'Dealing with Consumer Uncertainty: Online Product Reviews and What makes them helpful?'
 bibliography: references.bib
+csl: apa.csl
 link-citations: yes
 output:
-  bookdown::pdf_document2: 
+  bookdown::pdf_document2:
     fig.caption: yes
     includes:
-      in_header: non-float-fig.tex
+      in_header: [non-float-fig.tex, custom.tex]
     toc_depth: 4
+geometry: left=40mm, right=20mm, top=30mm, bottom=30mm
+fontsize: 12pt
+papersize: A4
+linestretch: 1.25
+fontfamily: times
 ---
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -34,6 +41,8 @@ knitr::opts_chunk$set(warning = FALSE,
                       echo = FALSE)
 ```
 
+\newpage
+
 # Introduction
 
 Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Customer Reviews (OCR). Online Customer Reviews come in the form of electronic word-of-mouth [@dellarocas2003] and can be defined as "*peer-generated product evaluations posted on company or third party websites*" [@mudambi2010]. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011; @dellarocas2007].
@@ -49,6 +58,8 @@ The research on perceived helpfulness is still growing. In Social and Behavioral
 This study uses secondary data. The reviews were collected from two websites. Namely, IMDB and BestBuy. The data was scrapped with Selenium Webdriver for Python [@python3]. Over 400,000 reviews and their meta data were gathered initially. After the data transformation process the final sample size was over 23,000. Then this data was subjected to empirical tests. It was found out that consumers usually find extreme reviews more helpful than neutral ones. Furthermore, consumers prefer longer reviews when reviews are rated negatively. On the contrast, positive reviews with fewer words were deemed more helpful by readers on the average. These effects were further moderated by product types, namely, Search and Experience goods.
 
 The plan of this study is outlined as the following. In the next section, the literature on the subject of Review Helpfulness is going to be presented. In the third section, the related theories which would make the understanding of the consumer behavior and review helpfulness will be laid out. Next, the data and the research methodology are going to be introduced. The results will be shared in the fifth section. In the last section the results are going to be discussed and the study is going to be concluded.
+
+\newpage
 
 # Literature Review
 
@@ -71,6 +82,8 @@ Many different types of research methodologies were employed in the literature o
 Any website which offers online reviews for products could be used as a data source (Yelp, Booking, BestBuy, eBay) in the literature of review helpfulness but the majority of the aforementioned studies used the data from either websites Amazon or Internet Movie Database (IMDB) because these websites offer relatively easier ways to get the needed data. They have their respective APIs and on top of that, it is relatively easier to scrape both websites. Additionally, both websites offer product reviews for a numerous different types of products. Amazon is a huge e-retailer and offers a wide range of items. IMDB is a home for both critic and user reviews of Movies and TV Shows. In some other studies local equivalents of Amazon was used as well. [@sun2019]. @cao2011 used data from CNET Download.com which is a software distributor.
 
 There might be variety reasons why there are some conflicting results in the literature. First of all, many different data sources were used in the studies. Even in the same data source, for instance Amazon, there exist a wide range of products with different brands. Different sub-groups of products can receive different feedbacks. This might increase the potential noise in the data, leading conflicting results. Secondly, many different research designs and research methodologies were employed. In these different research designs different independent and control variables were used because the data at the hand may allow for different sets of variables. Lastly, there is no established theory of review helpfulness. This means that studies are rather unorganized and researchers are usually inclining towards their own domain of expertise when it comes to explaining review helpfulness.
+
+\newpage
 
 # Theoretical Framework
 
@@ -101,6 +114,8 @@ Negativity Bias Theorem argues that humans or even animals have tendencies to be
 Prospect Theory (Loss Aversion) criticizes Expected Utility Theory by introducing the thought that Expected Utility Theory is insufficient explaining the decision making behavior of economic agents who are under risk. In Expected Utility Theory outcomes are weighted by their probabilities but Prospect Theory discusses that people dynamically give more or less weight to the outcomes depending on if it is a loss or a gain. This is called *certainty effect* [@kahneman1979]. The Certainty Effect causes people to behave differently whether they are going to lose or gain something. In the positive domain, people will prefer a small amount of a certain gain over a big gain which is merely probable (risk averse). On the contrary, in the negative domain, people will have a preference towards a big loss which is merely probable over a small certain loss (risk seeking).
 
 Since the cognitive abilities of humans are limited they tend to focus on what is crucial to them. Therefore, in the information processing context and because of the existence of the negativity bias, it could be expected that people process negative cues more thoroughly than positive ones. Furthermore, people may develop much more advanced memory about negative entities. This can also cause high awareness to negative information [@baumeister2001; @taylor1991].
+
+\newpage
 
 # The Data and Research Methodology
 
@@ -753,6 +768,8 @@ $$
 
 Tobit Regression is selected as the analysis method because of three reasons. First of all, the dependent variable, perceived helpfulness, is defined in a continuous range from 0 to 1 since perceived helpfulness is a percentage as mentioned above. The second reason as stated by @mudambi2010 is the potential selection bias in the sample. Unfortunately, it is not possible to know how many people read a particular review. Neither BestBuy nor IMDB disclose this information. Because of this, being included in a sample could be correlated with independent variables. For instance, potentially more voted reviews could attract more readers or readers could be drawn to reviews which have certain ratings. Lastly, there are many studies from the literature that used Tobit Regression as their research method [@mudambi2010; @korfiatis2012; @huang2015; @choi2020; @ren2019].
 
+\newpage
+
 # Results
 
 Tobit regression results are presented at Table \@ref(tab:Reg-Results) alongside with OLS results as a benchmark [@mudambi2010; @kuan2015; @choi2020].
@@ -790,11 +807,13 @@ experience_lm <- lm(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log
 ```
 
 ```{r Reg-Results, results='asis'}
+
 stargazer(list("Search Tobit" = search_tobit,
                "Experience Tobit" = experience_tobit,
                "Search Linear" = search_lm,
                "Experience Linear" = experience_lm),
           type = "latex",
+          notes.align = "l",
           header = FALSE,
           model.numbers = FALSE,
           column.labels = c("Search", "Experience", "Search", "Experience"),
@@ -805,6 +824,8 @@ stargazer(list("Search Tobit" = search_tobit,
           star.cutoffs = c(0.05, 0.01, 0.001),
           label = "tab:Reg-Results")
 ```
+
+\newpage
 
 # Discussion
 
@@ -830,6 +851,8 @@ Secondly, as pointed out in Section \@ref(literature-review), there were many di
 
 Potential omitted variables such as consumer's buying motivation or their trust towards strangers may also explain the conflicting or unexpected results as pointed out by @zhu2021. A person who is more agreeable high likely will find many more reviews helpful on the average. Additionally, buying motivation might play an important role in explaining the review helpfulness. Above, it was speculated that some consumers might have tendency towards certain brands or products. Favored brands might not be the only factor that affects the consumer motivation. For instance, a consumer with limited amount of budget may find positive reviews of products that have suitable prices helpful. Thus the product price relative to the consumer's budget can also be used as an indicator.
 
+\newpage
+
 # Conclusion
 
 This study collected Online Customer Reviews data from two different sources (IMDB and BestBuy) and analyzed the data within the context of consumer uncertainty. Negativity Bias Theorem, Prospect Theory and Search / Experience goods paradigm from information economics were used as an theoretical engine to explain the information gathering process of an average consumer. Results showed similarities from the existing Review Helpfulness literature. However, once again it should be noted that the literature has many conflicting results.
@@ -839,5 +862,7 @@ This study contributes to the literature as an additional empirical work with a 
 Goods with very strong search or experience attributes were chosen in order to compare the information gathering process in the clearest way possible. The results proves the fact that information gathering is easier for search goods than experience goods. This means that consumers face less uncertainty against search goods. The results are only generalizable to laptops, phones, televisions and movies since different goods have different mix of search and experience attributes.
 
 There are some implications for future studies. Firstly, aside from lexicon based sentiment analysis it is also possible to utilize deep learning methods to mine opinions from a text. One advantage of deep learning method over a lexicon is its versatility. A negative word can change from one context to another and training a deep learning method is more robust to this type of contextual changes whereas with lexicon based methods a negative word is a negative word no matter the context is. Next, future studies should consider collecting data from different regions and cultures. There might be some differences on how consumers process and react to the information in order to deal with uncertainty. Additionally, researchers can dig deeper into search and experience goods paradigm. It is well established in the literature that product type affects the information gathering process. However, there might be differences within product types depending on their search and experience attributes. An objective way to identify and index experience and search attributes may also shed some light to the conflicting results in the literature. Lastly, since Online Customer Reviews data is ever growing more researchers should incorporate Exploratory Data Analysis into their works. Reviews and how helpful these reviews are perceived by potential buyers is relatively a new topic. In addition, new ways to analyze text data are being developed so Online Customer Reviews offer a great potential for new discoveries from the data. This increases the value of EDA as well.
+
+\newpage
 
 # References
