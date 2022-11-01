@@ -353,7 +353,7 @@ movies_data %>%
   ggplot(aes(Helpfulness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
   scale_x_continuous(n.breaks = 10)+
-  labs(y = NULL)
+  labs(y = "Count")
 ```
 
 @hong2014 states that consumers likely to form homogeneous opinions about search goods [@sun2019]. On the contrary, the same paper suggests that consumers' opinions are more heterogeneous on experience goods. Intuitively, what these histograms show is the same. For instance, positive or negative attributes of search goods can be expressed in a limited number of ways. The storage space of a phone might be small or CPU of a laptop might not be fast as expected. Thus, one good review is enough to reveal the quality of a product. This might be the reason why such a big spike at 100% was observed on Figure \@ref(fig:IV-Hist-Search). In the movies (experience good) case on Figure \@ref(fig:IV-Hist-Exp), it can be seen that readers usually disagree with each other because the distribution of the perceived helpfulness distributed around 50%. This might be because evaluation process of movies is rather subjective. One person might not like Spider-Man: Homecoming and another would love it. This might depend on how a person idealizes the Spider-Man or Peter Parker image in her mind which is completely subjective.
@@ -379,7 +379,7 @@ p1 <- search_goods %>%
 p2 <- search_goods %>% 
   ggplot(aes(Rating, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(method = "loess", color = "steelblue")+
+  geom_smooth(method = "loess", color = "steelblue", size = 1.7)+
   labs(x = "Review Rating")
 
 plots <-  p1 + p2
@@ -397,7 +397,7 @@ p1 <- movies_data %>%
 p2 <- movies_data %>% 
   ggplot(aes(Rating, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
+  geom_smooth(color = "steelblue", size = 1.7)+
   scale_x_continuous(n.breaks = 10)+
   labs(x = "Review Rating")
 
@@ -419,25 +419,25 @@ p1 <- search_goods %>%
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
   scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = "Number of the Words")
+  labs(y = "Count", x = "Number of the Words")
 
 p1_log <- search_goods %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
   scale_x_log10(n.break = 8)+
-  labs(y = NULL, x = "log10(Number of the Words)")
+  labs(y = "Count", x = "log10(Number of the Words)")
 
 p2 <- search_goods %>% 
   ggplot(aes(Word_Count, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
+  geom_smooth(color = "steelblue", size = 1.7)+
   scale_x_continuous(n.breaks = 8)+
   labs(x = "Number of the Words")
 
 p2_log <- search_goods %>% 
   ggplot(aes(Word_Count, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
+  geom_smooth(color = "steelblue", size = 1.7)+
   scale_x_log10(n.breaks = 8)+
   labs(x = "log10(Number of the Words)")
 
@@ -452,27 +452,27 @@ plots + plot_annotation(
 p1 <- movies_data %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
-  scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = "Number of the Words")
+  scale_x_continuous(n.breaks = 7)+
+  labs(y = "Count", x = "Number of the Words")
 
 p1_log <- movies_data %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
-  scale_x_log10(n.break = 8)+
-  labs(y = NULL, x = "log10(Number of the Words)")
+  scale_x_log10(n.break = 7)+
+  labs(y = "Count", x = "log10(Number of the Words)")
 
 p2 <- movies_data %>% 
   ggplot(aes(Word_Count, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
-  scale_x_continuous(n.breaks = 8)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous(n.breaks = 7)+
   labs(x = "Number of the Words")
 
 p2_log <- movies_data %>% 
   ggplot(aes(Word_Count, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
-  scale_x_log10(n.breaks = 8)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_log10(n.breaks = 7)+
   labs(x = "log10(Number of the Words)")
 
 plots <-  (p1 + p1_log) / (p2 + p2_log)
@@ -498,27 +498,27 @@ On the scatter plots a weak relationship between perceived helpfulness and revie
 p1 <- search_goods %>% 
   ggplot(aes(Freshness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
-  scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = "Freshness of Review")
+  scale_x_continuous(n.breaks = 7)+
+  labs(y = "Count", x = "Freshness of Review")
 
 p1_log <- search_goods %>% 
   ggplot(aes(Freshness + 1))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
-  scale_x_log10(n.break = 8)+
-  labs(y = NULL, x = "log10(Freshness of Review + 1)")
+  scale_x_log10(n.break = 7)+
+  labs(y = "Count", x = "log10(Freshness of Review + 1)")
 
 p2 <- search_goods %>% 
   ggplot(aes(Freshness, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
-  scale_x_continuous(n.breaks = 8)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous(n.breaks = 7)+
   labs(x = "Freshness of Review")
 
 p2_log <- search_goods %>% 
   ggplot(aes(Freshness + 1, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
-  scale_x_log10(n.breaks = 8)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_log10(n.breaks = 7)+
   labs(x = "log10(Freshness of Review + 1)")
 
 plots <- (p1 + p1_log) / (p2 + p2_log)
@@ -533,27 +533,27 @@ plots + plot_annotation(
 p1 <- movies_data %>% 
   ggplot(aes(Freshness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
-  scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = "Freshness of Review")
+  scale_x_continuous(n.breaks = 6)+
+  labs(y = "Count", x = "Freshness of Review")
 
 p1_log <- movies_data %>% 
   ggplot(aes(Freshness + 1))+
-  geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
-  scale_x_log10(n.break = 8)+
-  labs(y = NULL, x = "log10(Freshness of Review + 1)")
+  geom_histogram(color = "white", fill = "steelblue", boundary = 1)+
+  scale_x_log10(n.break = 6)+
+  labs(y = "Count", x = "log10(Freshness of Review + 1)")
 
 p2 <- movies_data %>% 
   ggplot(aes(Freshness, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
-  scale_x_continuous(n.breaks = 8)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous(n.breaks = 6)+
   labs(x = "Freshness of Review")
 
 p2_log <- movies_data %>% 
   ggplot(aes(Freshness + 1, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
-  scale_x_log10(n.breaks = 8)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_log10(n.breaks = 6)+
   labs(x = "log10(Freshness of Review + 1)")
 
 plots <- (p1 + p1_log) / (p2 + p2_log)
@@ -595,7 +595,7 @@ p1 <- search_goods %>%
 p2 <- search_goods %>% 
   ggplot(aes(negative, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
+  geom_smooth(color = "steelblue", size = 1.7)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
 
@@ -616,7 +616,7 @@ p1 <- movies_data %>%
 p2 <- movies_data %>% 
   ggplot(aes(negative, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
+  geom_smooth(color = "steelblue", size = 1.7)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
 
@@ -646,12 +646,12 @@ p1 <- search_goods %>%
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
   scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = NULL)
+  labs(y = "Count", x = "Log10(Proportion of Positive Words)")
 
 p2 <- search_goods %>% 
   ggplot(aes(positive, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
+  geom_smooth(color = "steelblue", size = 1.7)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
 
@@ -667,12 +667,12 @@ p1 <- movies_data %>%
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
   scale_x_continuous(n.breaks = 8)+
-  labs(y = NULL, x = NULL)
+  labs(y = "Count", x = "Log10(Proportion of Positive Words)")
 
 p2 <- movies_data %>% 
   ggplot(aes(positive, Helpfulness))+
   geom_point(alpha = 0.1)+
-  geom_smooth(color = "steelblue")+
+  geom_smooth(color = "steelblue", size = 1.7)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
 
@@ -685,7 +685,85 @@ plots + plot_annotation(
 
 ### Control Variables
 
-Total Votes is going to be used as a control variable since 80% Perceived Helpfulness can arise from both 4 Helpful votes over 5 Total votes or 80 Helpful votes over 100 Total votes [@mudambi2010; @liu2014; @choi2020].
+The number of Total Votes is going to be used as a control variable since 80% Perceived Helpfulness can arise from both 4 Helpful votes over 5 Total votes or 80 Helpful votes over 100 Total votes [@mudambi2010; @liu2014; @choi2020].
+
+From Figures \@ref(fig:Search-Total) (B) and \@ref(fig:Experience-Total) (B) it can be observed that logarithmic transformation scales the variable in a better way for both good types. This is also good for linear models. Distributions for both good types are looking similar. There is a little difference though. Movies got voted many more times than search goods. This makes sense because relatively older movies are present in the data. In the case of electronics, it is hard to find reviews for older devices because they are not sold anymore so it is impossible to vote on them. This explains why there are so few amount of highly voted reviews for search goods.
+
+```{r Search-Total, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Total Votes for Search Goods and respective logarithmic transformations (B), (D)"}
+p1 <- search_goods %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 7)+
+  labs(y = "Count", x = "Total Vote")
+
+p1_log <- search_goods %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  scale_x_log10(n.break = 7)+
+  labs(y = "Count", x = "log10(Total Vote)")
+
+p2 <- search_goods %>% 
+  ggplot(aes(Total_Vote, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous(n.breaks = 7)+
+  labs(x = "Total Vote")
+
+p2_log <- search_goods %>% 
+  ggplot(aes(Total_Vote, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_log10(n.breaks = 7)+
+  labs(x = "log10(Total Vote)")
+
+plots <- (p1 + p1_log) / (p2 + p2_log)
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+
+```
+
+On Figures \@ref(fig:Search-Total) (C) and (D) the smoother line may look like a straight horizontal line because the plot is small but there exist a weak negative slope. This might indicate two things. There is no association between these two variables or there is a negative relationship.
+
+Figure \@ref(fig:Experience-Total) (C) and (D) show a different story. Figures might indicate that there is a positive relationship between these two variables.
+
+Nonetheless, it should be noted that the variable Total Votes is the denominator part of the dependent variable Perceived Helpfulness so any interpretations to these plots should be done with care.
+
+```{r Experience-Total, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Total Votes for Experience Goods and respective logarithmic transformations (B), (D)"}
+p1 <- movies_data %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  scale_x_continuous(n.breaks = 7)+
+  labs(y = "Count", x = "Total Vote")
+
+p1_log <- movies_data %>% 
+  ggplot(aes(Total_Vote))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 1)+
+  scale_x_log10(n.break = 6)+
+  labs(y = "Count", x = "log10(Total Vote)")
+
+p2 <- movies_data %>% 
+  ggplot(aes(Total_Vote, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous(n.breaks = 7)+
+  labs(x = "Total Vote")
+
+p2_log <- movies_data %>% 
+  ggplot(aes(Total_Vote, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_log10(n.breaks = 6)+
+  labs(x = "log10(Total Vote)")
+
+plots <- (p1 + p1_log) / (p2 + p2_log)
+
+plots + plot_annotation(
+  tag_levels = "A"
+)
+
+```
 
 ### Correlation Table
 
@@ -772,7 +850,7 @@ Tobit Regression is selected as the analysis method because of three reasons. Fi
 
 # Results
 
-Tobit regression results are presented at Table \@ref(tab:Reg-Results) alongside with OLS results as a benchmark [@mudambi2010; @kuan2015; @choi2020].
+Tobit regression results are presented at Table \@ref(tab:Reg-Results-Tobit) alongside with OLS results as a benchmark at Table \@ref(tab:Reg-Results-OLS) [@mudambi2010; @kuan2015; @choi2020].
 
 Hypothesis 1 proposed a U-Shape for the relationship between Review Extremity and Perceived Helpfulness. For Search Goods this is true because the linear Rating Extremity coefficient (-0.061, p \< 0.01) has a negative sign and the quadratic Rating Extremity coefficient (0.036, p \< 0.001) has a positive sign. The presence of the significant linear interaction effect between Review Extremity and Review Length accentuates the linear Rating Extremity coefficient (-0.043, p \< 0.001). This means that as reviews get longer negative extreme reviews become more useful. For Experience Goods, on the other hand, both linear (0.026, p \< 0.001) and quadratic (0.006, p \< 0.001) Review Extremity terms are positive. A U-Shaped function can not be observed. However, the significant interaction effect between Review Length and Review Extremity (-0.015, p \< 0.001) suggests that for longer reviews the linear term turns to negative. This means that the function takes a U-Shape after a certain review length. It can also be observed that Search Goods have stronger coefficients than Experience Goods meaning the expected U-Shape is more prominent for Search Goods. Therefore, it can be said that for shorter reviews Hypothesis 1 is partially supported and for longer reviews it is fully supported.
 
@@ -806,23 +884,40 @@ experience_lm <- lm(Helpfulness ~ Rating + I(Rating^2) + log10(Word_Count) + log
 
 ```
 
-```{r Reg-Results, results='asis'}
+```{r Reg-Results-Tobit, results='asis'}
 
 stargazer(list("Search Tobit" = search_tobit,
-               "Experience Tobit" = experience_tobit,
-               "Search Linear" = search_lm,
-               "Experience Linear" = experience_lm),
+               "Experience Tobit" = experience_tobit),
           type = "latex",
           notes.align = "l",
           header = FALSE,
           model.numbers = FALSE,
-          column.labels = c("Search", "Experience", "Search", "Experience"),
+          column.labels = c("Search", "Experience"),
           covariate.labels = c("Rating", "Rating Squared", "log10(Review Length)",
                                "log10(Total Vote)", "log10(Freshness + 1)",
                                "Positive Proportion",  
                                "Negative Proportion", "Rating x Review Length"),
           star.cutoffs = c(0.05, 0.01, 0.001),
-          label = "tab:Reg-Results")
+          label = "tab:Reg-Results-Tobit",
+          title = "Tobit Regression Results")
+```
+
+```{r Reg-Results-OLS, results='asis'}
+
+stargazer(list("Search Linear" = search_lm,
+               "Experience Linear" = experience_lm),
+          type = "latex",
+          notes.align = "l",
+          header = FALSE,
+          model.numbers = FALSE,
+          column.labels = c("Search", "Experience"),
+          covariate.labels = c("Rating", "Rating Squared", "log10(Review Length)",
+                               "log10(Total Vote)", "log10(Freshness + 1)",
+                               "Positive Proportion",  
+                               "Negative Proportion", "Rating x Review Length"),
+          star.cutoffs = c(0.05, 0.01, 0.001),
+          label = "tab:Reg-Results-OLS",
+          title = "OLS Regression Results")
 ```
 
 \newpage
@@ -839,7 +934,7 @@ A similar strong support for Negativity Bias can not be observed in the case of 
 
 A number of reasons could be speculated about why the Hypothesis 5 and Hypothesis 6 did not hold for experience goods. The expectation was observing a negative significant coefficient for proportion of positive words and a positive significant coefficient for proportion of negative words. At the very least it can be said that the existence of positive words in a movie review does not offer a diagnostic value according to regression results. Thus, it is hard to say there is a strong deviation from Hypothesis 6. On the contrast, Hypothesis 5 for experience goods was not supported at all.
 
-One reason of this might be that the NRC Word-Emotion Association Lexicon which was used to mine the negative words in the reviews was not suitable for movie reviews. For instance, the word "*cage"* is a negative word in the lexicon and "*marvel*" is a positive word. One or more movies in the sample include movies where "Nicholas *Cage*" had the starring role. There are also "*Marvel* Cinematic Universe" movies present in the data. Cases like these may create noise for the variable and the model because aforementioned words were used frequently and outside of the context of the lexicon. To test this problem words such as "*cage, john, climax, force, king, mad, fury, hardy, margin, harry, marvel, stark, iron, vulture, green, goblin, bale*" were filtered out of the lexicon for both good types. Neither coefficient signs nor coefficient significances were changed. However, it should be pointed out that the coefficient of negative words for experience goods was weakened slightly. Further filtering was not pursued because of potential dangers of hypothesis fishing. (The results in Table \@ref(tab:Reg-Results) are the results with the filter.)
+One reason of this might be that the NRC Word-Emotion Association Lexicon which was used to mine the negative words in the reviews was not suitable for movie reviews. For instance, the word "*cage"* is a negative word in the lexicon and "*marvel*" is a positive word. One or more movies in the sample include movies where "Nicholas *Cage*" had the starring role. There are also "*Marvel* Cinematic Universe" movies present in the data. Cases like these may create noise for the variable and the model because aforementioned words were used frequently and outside of the context of the lexicon. To test this problem words such as "*cage, john, climax, force, king, mad, fury, hardy, margin, harry, marvel, stark, iron, vulture, green, goblin, bale*" were filtered out of the lexicon for both good types. Neither coefficient signs nor coefficient significances were changed. However, it should be pointed out that the coefficient of negative words for experience goods was weakened slightly. Further filtering was not pursued because of potential dangers of hypothesis fishing. (The results in Tables \@ref(tab:Reg-Results-Tobit) and \@ref(tab:Reg-Results-OLS) are the results with the filter.)
 
 Another reason may arise from the subjective nature of the experience attributes of the movies. Negative words, in the case of electronics, may have narrower range of meanings because what they usually try to convey directly relates the to quality of the good itself. The quality of the good is easily accessible because of the fact that electronics have dominant search attributes. Thus, negative words probably translates as potential monetary risks rather than affecting emotions. A risk might be exemplified as purchasing a sub-par performing laptop with a given budget, in other words getting sub-optimal utility. Furthermore, electronics are usually bought to be used for a comparatively long period of time. A smartphone or a television can serve its owner for years so negative cues which relate to below average durability are very important. Buying a sub-durable product for a given budget can only increase the chances that the consumer will have to buy the same type of product prematurely in the future. On the other hand, the monetary risks associated with a bad movie are relatively lower. Consumers can go to cinema, buy a DVD, rent the movie on YouTube or access the movie as a part of their subscription plan on platforms such as Netflix. Subscription or ticket fees are not the only cost for the consumer. In order to consume the product the consumer must spend the time that is equal to the duration of the movie. Of course, the consumer can stop watching the movie anytime if it is too unbearable for her so she does not waste any more time. Because of these reasons the money spent on a movie might be irrelevant to an average consumer since accessing a movie is relatively cheaper than owning an electronic device. Therefore, negative words in a movie review may not alert the consumer for potential monetary losses. Instead, negative words could render a review in question unpleasant because emotions are priority in the case of consumption of movies.
 
