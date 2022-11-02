@@ -45,7 +45,7 @@ knitr::opts_chunk$set(warning = FALSE,
 
 # Introduction {.unnumbered}
 
-Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Customer Reviews (OCR). Online Customer Reviews come in the form of electronic word-of-mouth [@dellarocas2003] and can be defined as "*peer-generated product evaluations posted on company or third party websites*" [@mudambi2010]. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011; @dellarocas2007].
+Online shopping has becoming more and more prevalent in average consumer's daily life. Electronic shopping brought many advantages both for sellers and buyers. One of the positive perks is Online Consumer Reviews (OCR). Online Consumer Reviews come in the form of electronic word-of-mouth [@dellarocas2003] and can be defined as "*peer-generated product evaluations posted on company or third party websites*" [@mudambi2010]. OCR have an effect on product sales as well as consumer decision making [@duan2008; @lee2011; @dellarocas2007].
 
 OCR help customers by decreasing their search costs. Customers try to get information on the product they are going to buy so that they can decrease the uncertainty about that particular product. This information acquiring process is costly. Furthermore, this information gathering process might be more or less costly depending on the product type, namely Search and Experience goods [@nelson1970] . Search goods, by nature, have traits that can be observed objectively before buying (GHz of a CPU of a Laptop). On the other hand, quality of Experience goods can not be evaluated before buying and evaluations could be very subjective (One needs to watch a movie in order to understand if it is a good movie or not.).
 
@@ -63,7 +63,7 @@ The plan of this study is outlined as the following. In the next section, the li
 
 # Literature Review
 
-The research on Online Customer Reviews could be considered to have two main branches. One branch is heavily marketing oriented and tries to understand the effects of OCR on sales [@ghose2011; @ögüt2012]. The other branch is concerned with rather behavioral or psychological outcomes and focuses on perceived helpfulness only. The boundary between these two branches are somewhat blurry and the same independent variables were used to explain both helpfulness and sales. Furthermore, @topaloglu2019 found that helpfulness have a moderating effect on sales. Many other papers used perceived helpfulness to explain sales as well [@ghose2011; @lee2018]. Thus, these two branches are inter-connected with each other. This paper tries to understand behavioral aspect of the review helpfulness rather than its effects on sales.
+The research on Online Consumer Reviews could be considered to have two main branches. One branch is heavily marketing oriented and tries to understand the effects of OCR on sales [@ghose2011; @ögüt2012]. The other branch is concerned with rather behavioral or psychological outcomes and focuses on perceived helpfulness only. The boundary between these two branches are somewhat blurry and the same independent variables were used to explain both helpfulness and sales. Furthermore, @topaloglu2019 found that helpfulness have a moderating effect on sales. Many other papers used perceived helpfulness to explain sales as well [@ghose2011; @lee2018]. Thus, these two branches are inter-connected with each other. This paper tries to understand behavioral aspect of the review helpfulness rather than its effects on sales.
 
 Many independent variables and their relationship between perceived helpfulness were examined by researchers. @hong2017 groups these independent variables into two chunks. The first group is reviewer-related predictors. Variables within this group try to understand the relationship between reviewer status (reviewer expertise, number of past reviews etc.) and perceived helpfulness. [@sun2019; @ghose2011]. The second group tries to understand the review-related relationships such as review length, review extremity, discrete review emotion etc [@mudambi2010; @ghose2011; @ren2019; @eslami2018]. @ghose2011 showed that review-related predictors have stronger prediction power than reviewer-related ones. The choice of the variables is heavily dependent on the data itself. In my paper, only review-related predictors were examined because the data which is available for this study only allows for review-related variables.
 
@@ -123,7 +123,7 @@ Since the cognitive abilities of humans are limited they tend to focus on what i
 
 The data was scraped with a custom web scraper which was constructed with Selenium Framework for Python 3 [@python3]. The scraper got the customer reviews from IMDB and BestBuy. The former is the biggest platform for Movies and TV Shows, the latter is one of the biggest electronic retailers in United States of America. Both websites host a great amount of online reviews. After the data was collected it was further transformed and analyzed with the help of R Programming Language [@RCore; @Tidyverse; @Tidytext].
 
-Online Customer Reviews from IMDB were collected as an experience goods data since movies can be considered as pure-experience goods and their search attributes are very limited. It is nearly impossible to evaluate a movie before watching it. Furthermore, evaluations for a movie can both have subjective (personal attachment to the protagonist, atmosphere of the movie etc.) and objective aspects (writing, production quality etc.). There are also numerous studies that analyzed movies as experience goods[@nelson1970; @liu2014; @ghose2006; @baek2012; @lee2016].
+Online Consumer Reviews from IMDB were collected as an experience goods data since movies can be considered as pure-experience goods and their search attributes are very limited. It is nearly impossible to evaluate a movie before watching it. Furthermore, evaluations for a movie can both have subjective (personal attachment to the protagonist, atmosphere of the movie etc.) and objective aspects (writing, production quality etc.). There are also numerous studies that analyzed movies as experience goods[@nelson1970; @liu2014; @ghose2006; @baek2012; @lee2016].
 
 BestBuy is a very big electronics retailer and this is why the website offers a sizable number of OCR for search goods. Contrary to experience goods, search goods usually have more objectively quantifiable traits. For example, resolution or screen size of a TV, RAM or GPU of a Laptop, storage or battery lifetime of a Smart Phone. Additionally, in the literature, TVs, Laptops and Phones were used as search goods [@mudambi2010; @sun2019; @baek2012; @ren2019]. Therefore, search goods data was collected from BestBuy.
 
@@ -339,6 +339,11 @@ The ratio of helpfulness is derived from the formula above. Below on Figure \@re
 search_goods %>% 
   ggplot(aes(Helpfulness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Helpfulness)), size = 1, alpha = 0.6)+
+  annotate(geom = "label",
+           x = mean(search_goods$Helpfulness), y = Inf,
+           label = paste("Mean:", round(mean(search_goods$Helpfulness), digits = 2)),
+           vjust = 1, hjust = 1, size = 5)+
   scale_x_continuous(n.breaks = 10)+
   labs(y = "Count")
   
@@ -349,9 +354,15 @@ As it can be seen the distribution is rather skewed. Looks like in the electroni
 On a small note, the way the dependent variable was distributed for search goods may raise some questions about whether the standard errors will be calculated correctly or not in a regression method. @li2012 found out that given a relatively high sample size (\>3000) linear regression techniques produces sound estimates of coefficients. Since the sample size for search goods is over 8000 it might be assumed that the use of linear regression methods is acceptable.
 
 ```{r IV-Hist-Exp, fig.cap="Distribution of the Helpfulness of Experience Goods"}
+
 movies_data %>% 
   ggplot(aes(Helpfulness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Helpfulness)), size = 1, alpha = 0.6)+
+  annotate(geom = "label",
+           x = mean(movies_data$Helpfulness), y = Inf,
+           label = paste("Mean:", round(mean(movies_data$Helpfulness), digits = 2)),
+           vjust = 1, hjust = 1, size = 5)+
   scale_x_continuous(n.breaks = 10)+
   labs(y = "Count")
 ```
@@ -374,6 +385,10 @@ On Figure \@ref(fig:Search-Rating) (B) and Figure \@ref(fig:Experience-Rating) (
 p1 <- search_goods %>% 
   ggplot(aes(Rating))+
   geom_bar(fill = "steelblue")+
+  geom_vline(aes(xintercept = mean(Rating)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$Rating), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$Rating), digits = 2)),
+           vjust = 1, hjust = 1, size = 4.5)+
   labs(y = "Count", x = "Review Rating")
 
 p2 <- search_goods %>% 
@@ -391,6 +406,10 @@ plots + plot_annotation(tag_levels = "A")
 p1 <- movies_data %>% 
   ggplot(aes(Rating))+
   geom_bar(fill = "steelblue")+
+  geom_vline(aes(xintercept = mean(Rating)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$Rating), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$Rating), digits = 2)),
+           vjust = 1, hjust = 1, size = 4.5)+
   scale_x_continuous(n.breaks = 10)+
   labs(y = "Count", x = "Review Rating")
 
@@ -418,12 +437,20 @@ The bivariate relationship between the number of words and Helpfulness seems to 
 p1 <- search_goods %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Word_Count)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$Word_Count), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$Word_Count), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Count", x = "Number of the Words")
 
 p1_log <- search_goods %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  geom_vline(aes(xintercept = mean(Word_Count)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$Word_Count), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$Word_Count), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_log10(n.break = 8)+
   labs(y = "Count", x = "log10(Number of the Words)")
 
@@ -452,12 +479,20 @@ plots + plot_annotation(
 p1 <- movies_data %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Word_Count)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$Word_Count), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$Word_Count), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 7)+
   labs(y = "Count", x = "Number of the Words")
 
 p1_log <- movies_data %>% 
   ggplot(aes(Word_Count))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  geom_vline(aes(xintercept = mean(Word_Count)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$Word_Count), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$Word_Count), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_log10(n.break = 7)+
   labs(y = "Count", x = "log10(Number of the Words)")
 
@@ -498,12 +533,20 @@ On the scatter plots a weak relationship between perceived helpfulness and revie
 p1 <- search_goods %>% 
   ggplot(aes(Freshness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Freshness)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$Freshness), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$Freshness), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 7)+
   labs(y = "Count", x = "Freshness of Review")
 
 p1_log <- search_goods %>% 
   ggplot(aes(Freshness + 1))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  geom_vline(aes(xintercept = mean(Freshness)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$Freshness), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$Freshness), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_log10(n.break = 7)+
   labs(y = "Count", x = "log10(Freshness of Review + 1)")
 
@@ -533,12 +576,20 @@ plots + plot_annotation(
 p1 <- movies_data %>% 
   ggplot(aes(Freshness))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Freshness)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$Freshness), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$Freshness), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 6)+
   labs(y = "Count", x = "Freshness of Review")
 
 p1_log <- movies_data %>% 
   ggplot(aes(Freshness + 1))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 1)+
+  geom_vline(aes(xintercept = mean(Freshness)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$Freshness), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$Freshness), digits = 0)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_log10(n.break = 6)+
   labs(y = "Count", x = "log10(Freshness of Review + 1)")
 
@@ -589,6 +640,10 @@ On Figure \@ref(fig:Search-Neg) (B), non-linear relationship between perceived h
 p1 <- search_goods %>% 
   ggplot(aes(negative))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(negative)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$negative), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$negative), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Count", x = "Log10(Proportion of Negative Words)")
 
@@ -610,6 +665,10 @@ plots + plot_annotation(
 p1 <- movies_data %>% 
   ggplot(aes(negative))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(negative)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$negative), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$negative), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Count", x = "Log10(Proportion of Negative Words)")
 
@@ -645,6 +704,10 @@ On scatter plots (see Figure \@ref(fig:Search-Pos) (B) and Figure \@ref(fig:Expe
 p1 <- search_goods %>% 
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(positive)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$positive), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$positive), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Count", x = "Log10(Proportion of Positive Words)")
 
@@ -666,6 +729,10 @@ plots + plot_annotation(
 p1 <- movies_data %>% 
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(positive)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$positive), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$positive), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 8)+
   labs(y = "Count", x = "Log10(Proportion of Positive Words)")
 
@@ -693,12 +760,20 @@ From Figures \@ref(fig:Search-Total) (B) and \@ref(fig:Experience-Total) (B) it 
 p1 <- search_goods %>% 
   ggplot(aes(Total_Vote))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Total_Vote)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$Total_Vote), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$Total_Vote), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 7)+
   labs(y = "Count", x = "Total Vote")
 
 p1_log <- search_goods %>% 
   ggplot(aes(Total_Vote))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 10)+
+  geom_vline(aes(xintercept = mean(Total_Vote)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(search_goods$Total_Vote), y = Inf, 
+           label = paste("Mean:", round(mean(search_goods$Total_Vote), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_log10(n.break = 7)+
   labs(y = "Count", x = "log10(Total Vote)")
 
@@ -734,12 +809,20 @@ Nonetheless, it should be noted that the variable Total Votes is the denominator
 p1 <- movies_data %>% 
   ggplot(aes(Total_Vote))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(Total_Vote)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$Total_Vote), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$Total_Vote), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_continuous(n.breaks = 7)+
   labs(y = "Count", x = "Total Vote")
 
 p1_log <- movies_data %>% 
   ggplot(aes(Total_Vote))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 1)+
+  geom_vline(aes(xintercept = mean(Total_Vote)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = mean(movies_data$Total_Vote), y = Inf, 
+           label = paste("Mean:", round(mean(movies_data$Total_Vote), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
   scale_x_log10(n.break = 6)+
   labs(y = "Count", x = "log10(Total Vote)")
 
@@ -950,13 +1033,13 @@ Potential omitted variables such as consumer's buying motivation or their trust 
 
 # Conclusion
 
-This study collected Online Customer Reviews data from two different sources (IMDB and BestBuy) and analyzed the data within the context of consumer uncertainty. Negativity Bias Theorem, Prospect Theory and Search / Experience goods paradigm from information economics were used as theoretical engines to explain the information gathering process of an average consumer. Results showed similarities from the existing Review Helpfulness literature. However, once again it should be noted that the literature has many conflicting results.
+This study collected Online Consumer Reviews data from two different sources (IMDB and BestBuy) and analyzed the data within the context of consumer uncertainty. Negativity Bias Theorem, Prospect Theory and Search / Experience goods paradigm from information economics were used as theoretical engines to explain the information gathering process of an average consumer. Results showed similarities from the existing Review Helpfulness literature. However, once again it should be noted that the literature has many conflicting results.
 
 This study contributes to the literature as an additional empirical work with a unique BestBuy review data and a unique combination of movie reviews from IMDB. In addition, to my knowledge, this the first study which analyzed the linear interaction between Review Length and Review Rating in terms of Negativity Bias Theorem.
 
 Goods with very strong search or experience attributes were chosen in order to compare the information gathering process in the clearest way possible. The results proves the fact that information gathering is easier for search goods than experience goods. This means that consumers face less uncertainty against search goods. The results are only generalizable to laptops, phones, televisions and movies since different goods have different mix of search and experience attributes.
 
-There are some implications for future studies. Firstly, aside from lexicon based sentiment analysis it is also possible to utilize deep learning methods to mine opinions from a text. One advantage of deep learning method over a lexicon is its versatility. A negative word can change from one context to another and training a deep learning method is more robust to this type of contextual changes whereas with lexicon based methods a negative word is a negative word no matter the context is. Next, future studies should consider collecting data from different regions and cultures. There might be some differences on how consumers process and react to the information in order to deal with uncertainty. Additionally, researchers can dig deeper into search and experience goods paradigm. It is well established in the literature that product type affects the information gathering process. However, there might be differences within product types depending on their search and experience attributes. An objective way to identify and index experience and search attributes may also shed some light to the conflicting results in the literature. Lastly, since Online Customer Reviews data is ever growing more researchers should incorporate Exploratory Data Analysis into their works. Reviews and how helpful these reviews are perceived by potential buyers is relatively a new topic. In addition, new ways to analyze text data are being developed so Online Customer Reviews offer a great potential for new discoveries from the data. This increases the value of EDA as well.
+There are some implications for future studies. Firstly, aside from lexicon based sentiment analysis it is also possible to utilize deep learning methods to mine opinions from a text. One advantage of deep learning method over a lexicon is its versatility. A negative word can change from one context to another and training a deep learning method is more robust to this type of contextual changes whereas with lexicon based methods a negative word is a negative word no matter the context is. Next, future studies should consider collecting data from different regions and cultures. There might be some differences on how consumers process and react to the information in order to deal with uncertainty. Additionally, researchers can dig deeper into search and experience goods paradigm. It is well established in the literature that product type affects the information gathering process. However, there might be differences within product types depending on their search and experience attributes. An objective way to identify and index experience and search attributes may also shed some light to the conflicting results in the literature. Lastly, since Online Consumer Reviews data is ever growing more researchers should incorporate Exploratory Data Analysis into their works. Reviews and how helpful these reviews are perceived by potential buyers is relatively a new topic. In addition, new ways to analyze text data are being developed so Online Consumer Reviews offer a great potential for new discoveries from the data. This increases the value of EDA as well.
 
 \newpage
 
