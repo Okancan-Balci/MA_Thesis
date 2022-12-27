@@ -65,6 +65,8 @@ Since OCR do not share the same level of informativeness and usefulness [@pan201
 
 The research on perceived helpfulness is still growing. In Social and Behavioral Sciences, it is common to have conflicting studies and results in the literature [@hunter1991]. In this case, the study on perceived helpfulness is not an exception. Because of this reason, more empirical studies on perceived helpfulness are required. This study aims to add one more perspective to the growing literature of customer reviews and review helpfulness by employing a unique data set as well as questioning the subject with the intuition of economics. Furthermore, this study tries to show that unstructured data (e.g., text, image, etc.) is a viable option for economic research. With unstructured data, economics may be able to explore new venues.
 
+The existence of the Negativity Bias and how the potential effects of Negativity Bias on Review Helpfulness could be moderated by either Search And Experience goods will be the main focus of this study. A lesser degree of Negativity Bias is expected for Experience Goods. Additionally, the amount of information that a review has and its connection to Review Helpfulness with respect to Review Ratings will be analyzed. Next, the diagnostic values of the negative and positive sentiments are going to be discussed. Because of the Negativity Bias, a positive relationship between Negative Sentiments and Review Helpfulness is expected. Lastly, the relationship between the Review Helpfulness and the timeline of a review will be inquired.
+
 This study uses secondary data. The reviews were collected from two websites. Namely, IMDB and BestBuy. The data was scrapped with Selenium Webdriver for Python [@python3]. Over 400,000 reviews and their meta data were gathered initially. After the data transformation process the final sample size was over 23,000. Then this data was subjected to empirical tests. It was found out that consumers usually find extreme reviews more helpful than neutral ones. Furthermore, consumers prefer longer reviews when reviews are rated negatively. On the contrast, positive reviews with fewer words were deemed more helpful by readers on the average. In addition, the sentiment of a review also has a significant effect on the helpfulness of a review. These effects were further moderated by product types, particularly, Search and Experience goods.
 
 The plan of this study is outlined as the following. In the next section, the literature on the subject of Review Helpfulness is going to be presented. In the second section, the related theories which would help with the understanding of the consumer behavior and review helpfulness will be laid out. Next, the data and the research methodology are going to be introduced. The results will be shared in the fourth section. In the fifth section the results are going to be discussed and then the study is going to be concluded in the last section.
@@ -113,13 +115,13 @@ Consumers can choose from two different strategies when they want to acquire mor
 
 Ultimately, to put the theory in a more generalized way, a product's Total Cost consists of both Search Cost and Product Cost. This Search Cost is higher for Experience goods, in other words, information search is costlier for Experience goods than Search goods. In the consumer's perspective, to make the search viable, the marginal benefit of an additional search must be grater than the marginal cost of the additional search. The increasing use of internet decreases the search costs. Because of the decreased search costs, the consumer may undertake more search processes and this might change how people perceive the good types, in other words, internet and virtual experience sharing can convert some Experience goods to Search goods [@klein1998].
 
-## Negativity Bias Theorem and Loss Aversion
+## Negativity Bias and Loss Aversion
 
-Negativity Bias Theorem argues that humans or even animals have tendencies to be more aware of negative entities than positive ones. In @rozin2001's words Negativity Bias can be best exemplified such as the following:
+Negativity Bias argues that humans or even animals have tendencies to be more aware of negative entities than positive ones. In @rozin2001's words Negativity Bias can be best exemplified such as the following:
 
 > *"Brief contact with a cockroach will usually render a delicious meal inedible. The inverse phenomenon rendering a pile of cockroaches on a platter edible by contact with one's favorite food is unheard of. More modestly, consider a dish of a food that you are inclined to dislike: lima beans, fish, or whatever. What could you touch to that food to make it desirable to eat that is, what is the anti-cockroach? Nothing! . . . One of the best generic descriptions of this relative power of negative contamination is embedded in an age old Russian adage: 'A spoonful of tar can spoil a barrel of honey, but a spoonful of honey does nothing for a barrel of tar.'"*
 
-@rozin2001 explains the Negativity Bias Theorem by describing it with four main aspects. Namely, Negative Potency, Steeper Negative Gradients, Negative Dominance and Negative Differentiation [@rozin2001; @sen2007; @eslami2018]. Loss Aversion has a strong connection to Negativity Bias Theorem since negative cues might be used as an early warning against potential losses [@herr1991].
+@rozin2001 explains the Negativity Bias by describing it with four main aspects. Namely, Negative Potency, Steeper Negative Gradients, Negative Dominance and Negative Differentiation [@rozin2001; @sen2007; @eslami2018]. Loss Aversion has a strong connection to Negativity Bias since negative cues might be used as an early warning against potential losses [@herr1991].
 
 **Negative Potency** defends that the exact opposite of something positive carries heavier weight. In other words, negative events are much more impactful than their exact positive counterparts. For instance, losing 300\$ could have a harder psychological effect on a person than that particular person is gaining 300\$. Loss Aversion [@kahneman1979; @tversky1991] is the phenomenon where the Negative Potency can be observed the best. People risk more (less) when they are losing (gaining) something. This behavior can be explained by the Endowment Effect [@kahneman1990]. Endowment effect occurs because people usually over-estimate the value of their belongings, for example a pencil. However, they would have under-valued the same pencil if the item did not belong to them. The reason to this behavior is that the dis-utility of losing that pencil is greater than the utility of acquiring the same pencil.
 
@@ -660,11 +662,11 @@ These steps were taken in order to create this variable:
 3.  Matches were counted and divided by the total number of words with the respective review then multiplied by 100 in order to make regression results more interpretable.
 4.  Logarithmic transformation was applied in order to scale the variable in a more normalized way.
 
-On Figure \@ref(fig:Search-Neg) (A) and Figure \@ref(fig:Experience-Neg) (A) the distributions of the variable for both good types can be seen. On plots, X-axis labels were given in the logarithm of base 10 so 1.00 on the X-axis implies that 10% of the review was negative words. For example in this case the mean negative proportion rate is 2,3% ($10^{0.37}$) for search goods and 3,7% ($10^{0.57}$) for experience goods. It should be noted that `r round(mean(search_goods$negative == 0), digits = 2)` percent of the reviews for search goods do not have any negative words in them. For experience goods this number is `r round(mean(movies_data$negative == 0), digits = 2)` percent.
+On Figure \@ref(fig:Search-Neg) (A) and Figure \@ref(fig:Experience-Neg) (A) the distributions of the variable for both good types can be seen. On logarithmic transformed plots, X-axis labels were given in the logarithm of base 10 so 1.00 on the X-axis implies that 10% of the review was negative words. For example in this case the mean negative proportion rate is 2,3% ($10^{0.37}$) for search goods and 3,7% ($10^{0.57}$) for experience goods. It should be noted that `r round(mean(search_goods$negative == 0), digits = 2)` percent of the reviews for search goods do not have any negative words in them. For experience goods this number is `r round(mean(movies_data$negative == 0), digits = 2)` percent.
 
-On Figure \@ref(fig:Search-Neg) (B), non-linear relationship between perceived helpfulness and the proportion of negative words can be observed for search goods. This might suggest that too much negative information might fall into slander rather than informing the customer about the potential risks of the product. On the other hand, somewhat weak negative linear relationship between perceived helpfulness and proportion of negative words can be seen for experience goods on Figure \@ref(fig:Experience-Neg) (B).
+On Figure \@ref(fig:Search-Neg) (D), non-linear relationship between perceived helpfulness and the logarithm of the proportion of negative words can be observed for search goods. This might suggest that too much negative information might fall into slander rather than informing the customer about the potential risks of the product. On the other hand, somewhat weak negative linear relationship between perceived helpfulness and proportion of negative words can be seen for experience goods on Figure \@ref(fig:Experience-Neg) (D).
 
-```{r Search-Neg, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Search Goods"}
+```{r Search-Neg, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Proportion of Negative Words for Search Goods and their respective logaritmic transformations (B), (D)"}
 p1 <- search_goods %>% 
   ggplot(aes(negative))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -672,24 +674,44 @@ p1 <- search_goods %>%
   annotate(geom = "label", x = mean(search_goods$negative), y = Inf, 
            label = paste("Mean:", round(mean(search_goods$negative), digits = 2)),
            vjust = 1, hjust = 0, size = 4.5)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Count", x = "Log10(Proportion of Negative Words)")
+
+p3 <- search_goods %>% 
+  mutate(negative = 10^(negative)) %>% 
+  ggplot(aes(negative))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(negative)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = 10^mean(search_goods$negative), y = Inf, 
+           label = paste("Mean:", round(10^mean(search_goods$negative), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
+  scale_x_continuous()+
+  labs(y = "Count", x = "Proportion of Negative Words")
 
 p2 <- search_goods %>% 
   ggplot(aes(negative, Helpfulness))+
   geom_point(alpha = 0.1)+
   geom_smooth(color = "steelblue", size = 1.7)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
 
-plots <- p1 + p2
+p4 <- search_goods %>% 
+  mutate(negative = 10^negative) %>% 
+  ggplot(aes(negative, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous()+
+  coord_cartesian(ylim = c(-0.1,1))+
+  labs(y = "Helpfulness", x = "Proportion of Negative Words")
+
+plots <- (p3 + p1) / (p4 + p2)
 
 plots + plot_annotation(
   tag_levels = "A"
 )
 ```
 
-```{r Experience-Neg, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Negative Words for Experience Goods"}
+```{r Experience-Neg, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Proportion of Negative Words for Experience Goods and their respective logarithmic transformations (B), (D)"}
 p1 <- movies_data %>% 
   ggplot(aes(negative))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -697,17 +719,36 @@ p1 <- movies_data %>%
   annotate(geom = "label", x = mean(movies_data$negative), y = Inf, 
            label = paste("Mean:", round(mean(movies_data$negative), digits = 2)),
            vjust = 1, hjust = 0, size = 4.5)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Count", x = "Log10(Proportion of Negative Words)")
+
+p3 <- movies_data %>% 
+  mutate(negative = 10^negative) %>% 
+  ggplot(aes(negative))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(negative)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = 10^mean(movies_data$negative), y = Inf, 
+           label = paste("Mean:", round(10^mean(movies_data$negative), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
+  scale_x_continuous()+
+  labs(y = "Count", x = "Proportion of Negative Words")
 
 p2 <- movies_data %>% 
   ggplot(aes(negative, Helpfulness))+
   geom_point(alpha = 0.1)+
   geom_smooth(color = "steelblue", size = 1.7)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Helpfulness", x = "Log10(Proportion of Negative Words)")
 
-plots <- p1 + p2
+p4 <- movies_data %>% 
+  mutate(negative = 10^negative) %>% 
+  ggplot(aes(negative, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous()+
+  labs(y = "Helpfulness", x = "Proportion of Negative Words")
+
+plots <- (p3 + p1) / (p4 + p2)
 
 plots + plot_annotation(
   tag_levels = "A"
@@ -720,15 +761,15 @@ $$
 Positive\ Word \% = \frac{Number\ of\ Matched\ Positive\ Word}{Total\ Words\ in\ the\ Review} 
 $$
 
-This variable was engineered in the same manner with its negative words counterpart. In this case, however, reviews of both good types have more positive words in them proportionally when compared to negative words. `r round(mean(search_goods$positive == 0), digits = 2)` percent of the reviews of search goods do not have any positive words in them and this number is only `r round(mean(movies_data$positive == 0), digits = 2)` for experience goods. Mean proportion values are 4,4% ($10^{0.64}$) and 5,2% ($10^{0.72}$) for search and experience goods respectively. Except for zero values both distributions are looking quite normal (see Figure \@ref(fig:Search-Pos) (A) and Figure \@ref(fig:Experience-Pos) (A)).
+This variable was engineered in the same manner with its negative words counterpart. In this case, however, reviews of both good types have more positive words in them proportionally when compared to negative words. `r round(mean(search_goods$positive == 0), digits = 2)` percent of the reviews of search goods do not have any positive words in them and this number is only `r round(mean(movies_data$positive == 0), digits = 2)` for experience goods. Mean proportion values are 4,4% ($10^{0.64}$) and 5,2% ($10^{0.72}$) for search and experience goods respectively. Except for zero values both distributions are looking quite normal (see Figure \@ref(fig:Search-Pos) (B) and Figure \@ref(fig:Experience-Pos) (B)).
 
 *A sample of positive words from EmoLex:*
 
 > *"covenant, jovial, score, foundation, affirmation, reliable, mending, garden, luxurious, wit"*
 
-On scatter plots (see Figure \@ref(fig:Search-Pos) (B) and Figure \@ref(fig:Experience-Pos) (B)), relationships between perceived helpfulness and proportion of positive words are looking very similar to their negative counterparts. Furthermore, these plots are kind of similar to perceived helpfulness versus number of words plots (see Figure \@ref(fig:Search-Length) (B) and Figure \@ref(fig:Experience-Length) (B)). In a sense, both negative and positive proportions imply the number of words. As the proportion increases so does the number of words. That is why aforementioned figures show similar relationships between variables. On higher dimensions these relationships might be different. That is why Exploratory Data Analysis should never be conducted in a confirmatory sense.
+On scatter plots (see Figure \@ref(fig:Search-Pos) (D) and Figure \@ref(fig:Experience-Pos) (D)), relationships between perceived helpfulness and proportion of positive words are looking very similar to their negative counterparts. Furthermore, these plots are kind of similar to perceived helpfulness versus number of words plots (see Figure \@ref(fig:Search-Length) (B) and Figure \@ref(fig:Experience-Length) (B)). In a sense, both negative and positive proportions imply the number of words. As the proportion increases so does the number of words. That is why aforementioned figures show similar relationships between variables. On higher dimensions these relationships might be different. That is why Exploratory Data Analysis should never be conducted in a confirmatory sense.
 
-```{r Search-Pos, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Search Goods"}
+```{r Search-Pos, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Proportion of Positive Words for Search Goods and their respective logarithmic tansformations(B), (D)"}
 p1 <- search_goods %>% 
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -736,24 +777,44 @@ p1 <- search_goods %>%
   annotate(geom = "label", x = mean(search_goods$positive), y = Inf, 
            label = paste("Mean:", round(mean(search_goods$positive), digits = 2)),
            vjust = 1, hjust = 0, size = 4.5)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Count", x = "Log10(Proportion of Positive Words)")
+
+p3 <- search_goods %>% 
+  mutate(positive = 10^positive) %>% 
+  ggplot(aes(positive))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(positive)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = 10^mean(search_goods$positive), y = Inf, 
+           label = paste("Mean:", round(10^mean(search_goods$positive), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
+  scale_x_continuous()+
+  labs(y = "Count", x = "Proportion of Positive Words")
 
 p2 <- search_goods %>% 
   ggplot(aes(positive, Helpfulness))+
   geom_point(alpha = 0.1)+
   geom_smooth(color = "steelblue", size = 1.7)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
 
-plots <- p1 + p2
+p4 <- search_goods %>% 
+  mutate(positive = 10^positive) %>% 
+  ggplot(aes(positive, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous()+
+  coord_cartesian(ylim = c(0,1))+
+  labs(y = "Helpfulness", x = "Proportion of Positive Words")
+
+plots <- (p3 + p1) / (p4 + p2)
 
 plots + plot_annotation(
   tag_levels = "A"
 )
 ```
 
-```{r Experience-Pos, fig.cap="The Distribution(A) and the Scatter Plot(B) of Proportion of Positive Words for Experience Goods"}
+```{r Experience-Pos, fig.height=6, fig.cap="The Distribution(A) and the Scatter Plot(C) of Proportion of Positive Words for Experience Goods and their respective logarithmic transformations (B),(D)"}
 p1 <- movies_data %>% 
   ggplot(aes(positive))+
   geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
@@ -761,17 +822,36 @@ p1 <- movies_data %>%
   annotate(geom = "label", x = mean(movies_data$positive), y = Inf, 
            label = paste("Mean:", round(mean(movies_data$positive), digits = 2)),
            vjust = 1, hjust = 0, size = 4.5)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Count", x = "Log10(Proportion of Positive Words)")
+
+p3 <- movies_data %>% 
+  mutate(positive = 10^positive) %>% 
+  ggplot(aes(positive))+
+  geom_histogram(color = "white", fill = "steelblue", boundary = 0)+
+  geom_vline(aes(xintercept = mean(positive)), size = 1, alpha = 0.6)+
+  annotate(geom = "label", x = 10^mean(movies_data$positive), y = Inf, 
+           label = paste("Mean:", round(10^mean(movies_data$positive), digits = 2)),
+           vjust = 1, hjust = 0, size = 4.5)+
+  scale_x_continuous()+
+  labs(y = "Count", x = "Proportion of Positive Words")
 
 p2 <- movies_data %>% 
   ggplot(aes(positive, Helpfulness))+
   geom_point(alpha = 0.1)+
   geom_smooth(color = "steelblue", size = 1.7)+
-  scale_x_continuous(n.breaks = 8)+
+  scale_x_continuous()+
   labs(y = "Helpfulness", x = "Log10(Proportion of Positive Words)")
 
-plots <- p1 + p2
+p4 <- movies_data %>% 
+  mutate(positive = 10^positive) %>% 
+  ggplot(aes(positive, Helpfulness))+
+  geom_point(alpha = 0.1)+
+  geom_smooth(color = "steelblue", size = 1.7)+
+  scale_x_continuous()+
+  labs(y = "Helpfulness", x = "Proportion of Positive Words")
+
+plots <- (p3 + p1) / (p4 + p2)
 
 plots + plot_annotation(
   tag_levels = "A"
@@ -931,7 +1011,7 @@ In order to decrease the uncertainty in the most optimal way, search costs must 
 
 ***H2**: There is a positive relationship between the logarithm of the Review Length and the Perceived Helpfulness. This effect is stronger for Search Goods than Experience Goods*.
 
-As it was mentioned in Section \@ref(negativity-bias-theorem-and-loss-aversion), people tend to try to minimize their losses. Because of this, negative cues draw more attention than positive ones since negative cues may imply potential losses. @guo2019 found out that people spent more time when evaluating negative reviews. This may suggest a linear interaction between Review Extremity and Review Length. Since people take more time to evaluate negative reviews, this may indicate that the effect of Review Length is stronger when Review Rating is low. And when a review is longer it is perceived as more helpful for negatively rated reviews than positively rated reviews. In this case, it is hypothesized that:
+As it was mentioned in Section \@ref(negativity-bias-and-loss-aversion), people tend to try to minimize their losses. Because of this, negative cues draw more attention than positive ones since negative cues may imply potential losses. @guo2019 found out that people spent more time when evaluating negative reviews. This may suggest a linear interaction between Review Extremity and Review Length. Since people take more time to evaluate negative reviews, this may indicate that the effect of Review Length is stronger when Review Rating is low. And when a review is longer it is perceived as more helpful for negatively rated reviews than positively rated reviews. In this case, it is hypothesized that:
 
 ***H3**: There is a negative linear interaction effect between Review Rating and the logarithm of the Review Length for both Search and Experience Goods.*
 
@@ -1041,7 +1121,7 @@ stargazer(list("Search Linear" = search_lm,
 
 The results show a clear contrast between the objective nature of search goods versus the subjective nature of experience goods which once again validates the notion of Search and Experience goods classification that was developed by @nelson1970. It should not be ignored that this contrast is only relevant for the case of electronics versus movies since the available data only included these products. Electronics such as laptops or phones carry very strong search attributes whereas movies can be classified as "pure experience" goods which can be considered as a special case [@liu2014].
 
-Negativity Bias Theorem and Prospect Theory had a strong support in the case of search goods. The regression results showed that the reviews which had low ratings and/or reviews which had more negative words in them were found to be more helpful on the average. Additionally, Perceived Helpfulness has higher responsiveness to Review Length when a review has a low rating. This means that people focus more on negative cues than positive cues because the marginal value of an additional negative information is higher. This way consumers are able to cut down potential sure losses. A similar result was reflected by the negative coefficient of the proportion of positive words in a review. This shows that reviews with positive sentiments do not offer diagnostic value for consumers. Nonetheless, the U-Shape of the Review Rating variable also suggests positivity bias [@hoorens2014]. An explanation to this could be that certain brands or products might be favored by some customers and these customers might selectively tend towards positively rated reviews and find them helpful just because they love the brand [@zhu2021]. The reason why there is a divergence between the "positively rated review" and "a review with positive sentiment" might be explained by this. A consumer who has brand or product inclinations wants to be persuaded to have the product so this particular consumer does not really care about what is written in the review, he might skim through positive reviews until he feels persuaded. Since a preference towards a brand is subjective it might be speculated that a strong brand image could embed experience attributes into search goods. A similar notion was discussed by @mudambi2010 where they classified Apple iPod as an experience good. That is although an MP3 player such as iPod has many objective search attributes such as storage capacity and battery life, what makes this particular product preferable most of the time is the product image that was created by Apple.
+Negativity Bias and Prospect Theory had a strong support in the case of search goods. The regression results showed that the reviews which had low ratings and/or reviews which had more negative words in them were found to be more helpful on the average. Additionally, Perceived Helpfulness has higher responsiveness to Review Length when a review has a low rating. This means that people focus more on negative cues than positive cues because the marginal value of an additional negative information is higher. This way consumers are able to cut down potential sure losses. A similar result was reflected by the negative coefficient of the proportion of positive words in a review. This shows that reviews with positive sentiments do not offer diagnostic value for consumers. Nonetheless, the U-Shape of the Review Rating variable also suggests positivity bias [@hoorens2014]. An explanation to this could be that certain brands or products might be favored by some customers and these customers might selectively tend towards positively rated reviews and find them helpful just because they love the brand [@zhu2021]. The reason why there is a divergence between the "positively rated review" and "a review with positive sentiment" might be explained by this. A consumer who has brand or product inclinations wants to be persuaded to have the product so this particular consumer does not really care about what is written in the review, he might skim through positive reviews until he feels persuaded. Since a preference towards a brand is subjective it might be speculated that a strong brand image could embed experience attributes into search goods. A similar notion was discussed by @mudambi2010 where they classified Apple iPod as an experience good. That is although an MP3 player such as iPod has many objective search attributes such as storage capacity and battery life, what makes this particular product preferable most of the time is the product image that was created by Apple.
 
 The rationality why the statistical results for search goods came out just as expected can be accredited to their objective features. Properties of electronics are easily evaluated prior purchase. This means that it is comparatively easier to collect information on search goods than experience goods. Other than online consumer reviews on a retailer's website, a potential buyer has an arsenal of product reviews which are available on tech enthusiastic websites where electronics are reviewed by professionals. Furthermore, some channels on YouTube offer product reviews where the reviewer inspects the product in question on a camera. Thus, the potential buyer can gather a great amount of information even before accessing to the online retailer's website.
 
@@ -1067,9 +1147,9 @@ Potential omitted variables such as consumer's buying motivation or his/her trus
 
 # Conclusion
 
-Online Consumer Reviews data were collected from two different sources (IMDB and BestBuy) and analyzed within the context of consumer uncertainty in this study. Negativity Bias Theorem, Prospect Theory and Search / Experience goods paradigm from information economics were used as theoretical engines to explain the information gathering process of an average consumer. Results showed similarities from the existing Review Helpfulness literature. However, once again it should be noted that the literature has many conflicting results.
+Online Consumer Reviews data were collected from two different sources (IMDB and BestBuy) and analyzed within the context of consumer uncertainty in this study. Negativity Bias, Prospect Theory and Search / Experience goods paradigm from information economics were used as theoretical engines to explain the information gathering process of an average consumer. Results showed similarities from the existing Review Helpfulness literature. However, once again it should be noted that the literature has many conflicting results.
 
-This study contributes to the literature as an additional empirical work with a unique BestBuy review data and a unique combination of movie reviews from IMDB. In addition, to my knowledge, this is the first study which analyzed the linear continuous interaction between the Review Length and the Review Rating in terms of Negativity Bias Theorem. Additionally, there is a lack of emphasis on the sentiment analysis in the existing literature. By employing positive and negative sentiments in terms of Negativity Bias and Prospect Theory this study shows the viability of the sentiment analysis in this context.
+This study contributes to the literature as an additional empirical work with a unique BestBuy review data and a unique combination of movie reviews from IMDB. In addition, to my knowledge, this is the first study which analyzed the linear continuous interaction between the Review Length and the Review Rating in terms of Negativity Bias. Additionally, there is a lack of emphasis on the sentiment analysis in the existing literature. By employing positive and negative sentiments in terms of Negativity Bias and Prospect Theory this study shows the viability of the sentiment analysis in this context.
 
 Goods with very strong search or experience attributes were chosen in order to compare the information gathering process in the clearest way possible. The results prove the fact that information gathering is easier for search goods than experience goods. This means that consumers face less uncertainty against search goods. The results are only generalizable to laptops, phones, televisions and movies since different goods have different mix of search and experience attributes.
 
