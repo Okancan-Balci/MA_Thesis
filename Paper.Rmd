@@ -858,6 +858,8 @@ plots + plot_annotation(
 )
 ```
 
+Readers may be curious about the existence of negation words such as "not", "no", etc.. Additionally, reviewers might also be sarcastic when writing their reviews and they might say thing like "This product was so good that I could not believe it!". @Tidytext discusses that both negation and sarcasm were used in a lesser degree in the English language. Therefore, given the enough sample size non-negated words and non-sarcastic use of the language get dominated by the normal use of the words.
+
 ### Control Variables
 
 #### Total Votes
