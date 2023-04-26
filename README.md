@@ -1,5 +1,7 @@
 ## Dealing with Consumer Uncertainty: Online Consumer Reviews and What makes them helpful?
 
+**[To Read](https://raw.githubusercontent.com/Okancan-Balci/MA_Thesis/main/Paper.pdf?token=GHSAT0AAAAAACAXSBOSSDWJTRZG7PQDFZCSZCJCVYA)**
+
 ## Thesis Summary
 
 I analyzed consumer reviews from IMDb and BestBuy in the context of Behavioral Economics and Information Economics specifically [Loss Aversion](https://en.wikipedia.org/wiki/Loss_aversion), [Negativity Bias](https://en.wikipedia.org/wiki/Negativity_bias) and [Search & Experience Goods Paradigm](https://en.wikipedia.org/wiki/SEC_classification_of_goods_and_services).
